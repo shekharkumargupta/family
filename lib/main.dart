@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'family/view/MainTab.dart';
+import 'package:family/view/MainTab.dart';
 
 
 void main() {
