@@ -35,7 +35,7 @@ class PostList extends StatelessWidget{
 
   Widget createPostCard(){
     return Card(
-      clipBehavior: Clip.antiAlias,
+      clipBehavior: Clip.antiAliasWithSaveLayer,
       child: Column(
         children: [
           ListTile(
