@@ -1,57 +1,61 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:family/model/Post.dart';
+import 'package:family/service/PostService.dart';
 
-class PostList extends StatelessWidget{
+class PostList extends StatefulWidget{
+
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: createPostCard(),
+  State<StatefulWidget> createState() {
+      return PostState();
+  }
+}
+
+class PostState extends State<PostList> {
+
+  List<Post> posts = PostService().findAll();
+
+  @override
+  Widget build(BuildContext klcontext) {
+    return postList();
+  }
+
+  Widget postList(){
+    return ListView.builder(
+      itemCount: posts.length,
+      itemBuilder: (context, index){
+          return buildPostCardRow(posts.elementAt(index));
+      },
     );
   }
 
-  Future<Widget> getImage() async {
-    final Completer<Widget> completer = Completer();
-    final url = 'https://picsum.photos/900/600';
-    final image = NetworkImage(url);
-    // final config = await image.obtainKey();
-    final load = image.resolve(const ImageConfiguration());
-
-    final listener = new ImageStreamListener((ImageInfo info, isSync) async {
-      print(info.image.width);
-      print(info.image.height);
-
-      if (info.image.width == 80 && info.image.height == 160) {
-        completer.complete(Container(child: Text('AZAZA')));
-      } else {
-        completer.complete(Container(child: Image(image: image)));
-      }
-    });
-
-    load.addListener(listener);
-    return completer.future;
-  }
-
-  Widget createPostCard(){
+  Widget buildPostCardRow(Post post){
     return Card(
       clipBehavior: Clip.antiAliasWithSaveLayer,
       child: Column(
         children: [
           ListTile(
-            leading: Icon(Icons.arrow_drop_down_circle),
-            title: const Text('Card title 1'),
+            leading: CircleAvatar(
+              child: Container(
+                alignment: Alignment.center,
+                child: Text(
+                        post.postedBy.characters.first.toUpperCase()
+                    ),
+              ),
+            ),
+            title: Text(post.postedBy),
             subtitle: Text(
-              'Secondary Text',
+              'Subtitle',
               style: TextStyle(color: Colors.black.withOpacity(0.6)),
             ),
-            trailing: Text('Trailing'),
+            trailing: Icon(Icons.favorite),
           ),
 
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
-              'Greyhound divisively hello coldly wonderfully marginally far upon excluding.',
+              post.text,
               style: TextStyle(color: Colors.black.withOpacity(0.6)),
             ),
           ),
@@ -95,4 +99,27 @@ class PostList extends StatelessWidget{
       ),
     );
   }
+
+  Future<Widget> getImage() async {
+    final Completer<Widget> completer = Completer();
+    final url = 'https://picsum.photos/900/600';
+    final image = NetworkImage(url);
+    // final config = await image.obtainKey();
+    final load = image.resolve(const ImageConfiguration());
+
+    final listener = new ImageStreamListener((ImageInfo info, isSync) async {
+      print(info.image.width);
+      print(info.image.height);
+
+      if (info.image.width == 80 && info.image.height == 160) {
+        completer.complete(Container(child: Text('AZAZA')));
+      } else {
+        completer.complete(Container(child: Image(image: image)));
+      }
+    });
+
+    load.addListener(listener);
+    return completer.future;
+  }
+
 }
