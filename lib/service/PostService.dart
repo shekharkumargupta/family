@@ -25,4 +25,8 @@ class PostService {
       }
     );
   }
+
+  void increaseLike(Post post){
+    post.likes = post.likes + 1;
+  }
 }

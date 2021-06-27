@@ -31,6 +31,4 @@ class Post {
   set postedBy(String value) {
     _postedBy = value;
   }
-
-
 }
