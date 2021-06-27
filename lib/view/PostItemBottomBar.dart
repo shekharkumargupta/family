@@ -32,8 +32,8 @@ class PostItemBottomBarState extends State<PostItemBottomBar> {
           ButtonBar(
             alignment: MainAxisAlignment.start,
             children: [
-              Text('Likes ${post.likes}'),
-              Text('Comments ${post.comments}')
+              Text('Likes ${post.likesCount}'),
+              Text('Comments ${post.commentsCount}')
             ],
           ),
 
@@ -45,7 +45,7 @@ class PostItemBottomBarState extends State<PostItemBottomBar> {
                 onPressed: () {
                   setState(() {
                     PostService().increaseLike(post);
-                    print(post.likes);
+                    print(post.likesCount);
                   });
                 },
                 child: Icon(Icons.thumb_up_alt_outlined),
