@@ -19,6 +19,7 @@ class MainTab extends StatelessWidget {
                 Tab(icon: Icon(Icons.people)),
                 Tab(icon: Icon(Icons.perm_media))
               ],
+              onTap: (value) => print(value),
             ),
             title: Text('Family'),
           ),
@@ -28,6 +29,13 @@ class MainTab extends StatelessWidget {
               PeopleList(),
               MediaList()
             ],
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: (){
+                print('Current index ${DefaultTabController.of(context).index}');
+            },
+            child: const Icon(Icons.add),
+            backgroundColor: Colors.indigo,
           ),
         ),
       ),
