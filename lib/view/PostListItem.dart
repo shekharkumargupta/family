@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+
 import 'package:family/model/Post.dart';
 import 'package:family/view/PostItemBottomBar.dart';
 import 'package:family/widgets/ImageWidget.dart';
+import 'package:family/widgets/ImageSlider.dart';
 
 class PostListItem extends StatelessWidget{
 
@@ -15,8 +18,6 @@ class PostListItem extends StatelessWidget{
   }
 
   Widget buildPostCardRow(Post post){
-
-
 
     return Card(
       clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -47,21 +48,9 @@ class PostListItem extends StatelessWidget{
             ),
           ),
 
-          Container(
-            alignment: Alignment.center,
-            child: FutureBuilder<Widget>(
-              future: ImageWidget().createImageWidget(post.medias.elementAt(0).url),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return snapshot.data;
-                } else {
-                  return LinearProgressIndicator(
-                      backgroundColor: Colors.indigo,
-                  );
-                }
-              },
-            ),
-          ),
+
+          ImageSlider().createImageSlider(post.medias),
+
           PostItemBottomBar(post),
         ],
       ),
