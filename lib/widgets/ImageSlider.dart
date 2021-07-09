@@ -42,7 +42,7 @@ class ImageSlider {
             return snapshot.data;
           } else {
             return LinearProgressIndicator(
-              backgroundColor: Colors.indigo,
+              //backgroundColor: Colors.indigo,
             );
           }
         },
