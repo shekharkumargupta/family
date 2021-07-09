@@ -1,5 +1,6 @@
-import 'dart:html';
 
+import 'Comment.dart';
+import 'Media.dart';
 import 'Person.dart';
 
 class Post {
@@ -8,6 +9,8 @@ class Post {
   String _postedBy;
   Set<Person> _likers;
   List<Comment> _comments;
+  List<Media> _medias;
+
 
   int _likesCount;
   int _commentsCount;
@@ -51,5 +54,13 @@ class Post {
     _text = value;
   }
 
+  List<Media> get medias => _medias;
 
+  set medias(List<Media> value) {
+    _medias = value;
+  }
+
+  setMedias(List<Media> value){
+    _medias = value;
+  }
 }

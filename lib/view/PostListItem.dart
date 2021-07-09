@@ -15,6 +15,9 @@ class PostListItem extends StatelessWidget{
   }
 
   Widget buildPostCardRow(Post post){
+
+
+
     return Card(
       clipBehavior: Clip.antiAliasWithSaveLayer,
       child: Column(
@@ -47,12 +50,14 @@ class PostListItem extends StatelessWidget{
           Container(
             alignment: Alignment.center,
             child: FutureBuilder<Widget>(
-              future: ImageWidget().createImageWidget('https://picsum.photos/900/600'),
+              future: ImageWidget().createImageWidget(post.medias.elementAt(0).url),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return snapshot.data;
                 } else {
-                  return Text('LOADING...');
+                  return LinearProgressIndicator(
+                      backgroundColor: Colors.indigo,
+                  );
                 }
               },
             ),
