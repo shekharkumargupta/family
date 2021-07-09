@@ -5,10 +5,13 @@ import 'package:family/view/PostList.dart';
 
 class MainTab extends StatelessWidget {
 
+  int selectedTabIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: DefaultTabController(
+        initialIndex: selectedTabIndex,
         length: 3,
         child: Scaffold(
           appBar: AppBar(
@@ -19,7 +22,9 @@ class MainTab extends StatelessWidget {
                 Tab(icon: Icon(Icons.people)),
                 Tab(icon: Icon(Icons.perm_media))
               ],
-              onTap: (value) => print(value),
+              onTap: (tabIndex) => {
+                  selectedTabIndex = tabIndex
+              },
             ),
             title: Text('Family'),
           ),
@@ -32,7 +37,8 @@ class MainTab extends StatelessWidget {
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: (){
-                print('Current index ${DefaultTabController.of(context).index}');
+                //print('Current index ${DefaultTabController.of(context).index}');
+                print('Current index ${selectedTabIndex}');
             },
             child: const Icon(Icons.add),
             backgroundColor: Colors.indigo,
