@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:loading_animations/loading_animations.dart';
+
 
 import 'package:family/model/Media.dart';
 import 'package:family/widgets/ImageWidget.dart';
@@ -19,7 +21,7 @@ class ImageSlider {
         autoPlayCurve: Curves.fastOutSlowIn,
         enableInfiniteScroll: true,
         autoPlayAnimationDuration: Duration(milliseconds: 900),
-        viewportFraction: 1.2,
+        viewportFraction: 1,
       ),
     );
   }
@@ -35,14 +37,16 @@ class ImageSlider {
   createImageItem(String imageUrl){
     return Container(
       alignment: Alignment.center,
+      decoration: BoxDecoration(color: Colors.white),
       child: FutureBuilder<Widget>(
         future: ImageWidget().createImageWidget(imageUrl),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return snapshot.data;
           } else {
-            return LinearProgressIndicator(
-              //backgroundColor: Colors.indigo,
+            return  LoadingRotating.square(
+              size: 40,
+              backgroundColor: Colors.black12,
             );
           }
         },
