@@ -12,6 +12,7 @@ class MainTab extends StatelessWidget {
   @override
   Widget build(BuildContext context){
     return MaterialApp(
+      theme: ThemeData.light(),
         home: DefaultTabController(
           length: 3,
           child: new Scaffold(
@@ -47,18 +48,9 @@ class MainTab extends StatelessWidget {
                 ],
               ),
             ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: (){
-                //print('Current index ${DefaultTabController.of(context).index}');
-                print('Current index ${selectedTabIndex}');
 
-                Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => PostForm()),
-                );
-              },
-              child: const Icon(Icons.camera),
-              backgroundColor: Colors.indigo,
-            ),
+
+
           ),
         )
     );

@@ -3,6 +3,8 @@ import 'package:family/model/Post.dart';
 import 'package:family/view/PostListItem.dart';
 import 'package:family/service/PostService.dart';
 
+import 'PostForm.dart';
+
 class PostList extends StatefulWidget{
 
 
@@ -18,7 +20,21 @@ class PostState extends State<PostList> {
 
   @override
   Widget build(BuildContext klcontext) {
-    return postList();
+    return  Scaffold(
+        body: postList(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: (){
+            //print('Current index ${selectedTabIndex}');
+            Navigator.push(context,
+              MaterialPageRoute(builder: (context) => PostForm()),
+            );
+          },
+          child: const Icon(Icons.add),
+          backgroundColor: Colors.indigo,
+        ),
+    );
+
+      //postList();
   }
 
   Widget postList(){
