@@ -33,6 +33,7 @@ dependencies:
   loading_animations: "^2.1.0"
   path_provider: ^2.0.3
   image_picker: ^0.8.4
+  persistent_bottom_nav_bar: any
 
 dev_dependencies:
   flutter_test:

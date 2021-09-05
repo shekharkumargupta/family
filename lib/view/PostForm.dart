@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:family/widgets/ImageSlider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
 class PostForm extends StatefulWidget {
 
@@ -16,6 +17,7 @@ class PostForm extends StatefulWidget {
 class PostFormState extends State<PostForm> {
 
   final _formKey = GlobalKey<FormState>();
+  int selectedIndex = 0;
   File imageFile;
 
   Future getImageFromCamera() async {
@@ -45,20 +47,42 @@ class PostFormState extends State<PostForm> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      appBar: AppBar(title: Text('Post your feed'),),
-      body: Padding(
-        padding: EdgeInsets.all(25.0),
-        child:  Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              createPostForm(context)
-            ],
+      appBar: AppBar(
+        title: const Text('Post your thought'),
+      ),
+      body: Center(
+        child: createPostForm(context),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.camera_alt),
+            label: 'Take Photo',
           ),
-        ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.photo_album),
+            label: 'From Gallary',
+          )
+        ],
+        currentIndex: selectedIndex,
+        onTap: onItemTapped,
       ),
     );
+  }
+
+  void onItemTapped(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+
+    if(selectedIndex == 0){
+      getImageFromCamera();
+    }
+    if(selectedIndex == 1){
+      getImageFromGallary();
+    }
   }
 
   Widget createPostForm(BuildContext context){
@@ -67,20 +91,11 @@ class PostFormState extends State<PostForm> {
       child: Form(
         child: Column(
           children: <Widget>[
-            TextFormField(
-              maxLines: 4,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-
-                ),
-                labelText: 'Express yourself here'
-              ),
-            ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Container(
                 width: MediaQuery.of(context).size.width,
-                height: 200.0,
+                //height: 200.0,
                 child: Center(
                   child: imageFile == null
                       ? Text("No Image is picked")
@@ -88,21 +103,16 @@ class PostFormState extends State<PostForm> {
                 ),
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                FloatingActionButton(
-                  onPressed: getImageFromCamera,
-                  tooltip: "pickImage",
-                  child: Icon(Icons.add_a_photo),
-                ),
-                FloatingActionButton(
-                  onPressed: getImageFromGallary,
-                  tooltip: "Pick Image",
-                  child: Icon(Icons.camera_alt),
-                )
-              ],
-            )
+
+            TextFormField(
+              maxLines: 4,
+              decoration: InputDecoration(
+                  border: OutlineInputBorder(
+
+                  ),
+                  labelText: 'Express yourself here'
+              ),
+            ),
           ],
         ),
       ),
