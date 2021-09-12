@@ -1,12 +1,13 @@
-import 'package:flutter/material.dart';
 import 'package:family/model/Post.dart';
-import 'package:family/view/PostListItem.dart';
 import 'package:family/service/PostService.dart';
+import 'package:family/view/PostListItem.dart';
+import 'package:flutter/material.dart' show BuildContext, Colors, FloatingActionButton, Icon, Icons, ListView, MaterialPageRoute, Navigator, Scaffold, State, StatefulWidget, Widget;
 
 import 'PostForm.dart';
 
 class PostList extends StatefulWidget{
 
+  PostList();
 
   @override
   State<StatefulWidget> createState() {

@@ -9,7 +9,7 @@
 .history
 .svn/
 
-# IntelliJ related
+# IntelliJ red
 *.iml
 *.ipr
 *.iws
@@ -20,7 +20,7 @@
 # is commented out by default.
 #.vscode/
 
-# Flutter/Dart/Pub related
+# Flutter/Dart/Pub red
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
@@ -31,13 +31,13 @@
 .pub/
 /build/
 
-# Web related
+# Web red
 lib/generated_plugin_registrant.dart
 
-# Symbolication related
+# Symbolication red
 app.*.symbols
 
-# Obfuscation related
+# Obfuscation red
 app.*.map.json
 
 # Android Studio will place build artifacts here

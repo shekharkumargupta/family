@@ -31,9 +31,17 @@ dependencies:
   cupertino_icons: ^1.0.2
   carousel_slider: ^4.0.0
   loading_animations: "^2.1.0"
-  path_provider: ^2.0.3
-  image_picker: ^0.8.4
   persistent_bottom_nav_bar: any
+
+
+  camera: ^0.9.2+2
+  camera_platform_interface: ^2.1.0
+  flutter_plugin_android_lifecycle: ^2.0.2
+  pedantic: ^1.9.2
+  quiver: ^3.0.0
+  path: any
+  path_provider: any
+  video_player: any
 
 dev_dependencies:
   flutter_test:
@@ -49,6 +57,8 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+
 
   # To add assets to your application, add an assets section, like this:
   # assets:

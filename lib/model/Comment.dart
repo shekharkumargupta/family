@@ -2,7 +2,7 @@ import 'Person.dart';
 
 class Comment {
 
-  int id;
+  int id = 0;
   Person _commentedBy;
   String _text;
 

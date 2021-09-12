@@ -1,12 +1,12 @@
 import 'dart:io';
+
+import 'package:camera/camera.dart';
 import 'package:family/widgets/ImageSlider.dart';
+import 'package:family/widgets/TakePictureScreenWidget.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
+
 
 class PostForm extends StatefulWidget {
-
-  const PostForm ({Key key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -20,31 +20,6 @@ class PostFormState extends State<PostForm> {
   int selectedIndex = 0;
   File imageFile;
 
-  Future getImageFromCamera() async {
-    PickedFile pickedFile = await ImagePicker().getImage(
-      source: ImageSource.camera,
-      maxWidth: 1800,
-      maxHeight: 1800,
-    );
-    if (pickedFile != null) {
-      setState(() {
-        imageFile = File(pickedFile.path);
-      });
-    }
-  }
-  Future getImageFromGallary() async {
-    PickedFile pickedFile = await ImagePicker().getImage(
-      source: ImageSource.gallery,
-      maxWidth: 1800,
-      maxHeight: 1800,
-    );
-    if (pickedFile != null) {
-      setState(() {
-        imageFile = File(pickedFile.path);
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
 
@@ -54,6 +29,26 @@ class PostFormState extends State<PostForm> {
       ),
       body: Center(
         child: createPostForm(context),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){
+          List<CameraDescription> cameras = [];
+          Future<void> main() async {
+            // Fetch the available cameras before initializing the app.
+            try {
+              WidgetsFlutterBinding.ensureInitialized();
+              cameras = await availableCameras();
+            } on CameraException catch (e) {
+              //print(e.code + " " + e.description);
+              print(e);
+            }
+          }
+          Navigator.push(context,
+            MaterialPageRoute(builder: (context) => TakePictureScreenWidget(cameras)),
+          );
+        },
+        child: const Icon(Icons.person_add),
+        backgroundColor: Colors.indigo,
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -78,10 +73,9 @@ class PostFormState extends State<PostForm> {
     });
 
     if(selectedIndex == 0){
-      getImageFromCamera();
+      //TakePictureScreenWidget();
     }
     if(selectedIndex == 1){
-      getImageFromGallary();
     }
   }
 
@@ -97,8 +91,8 @@ class PostFormState extends State<PostForm> {
                 width: MediaQuery.of(context).size.width,
                 //height: 200.0,
                 child: Center(
-                  child: imageFile == null
-                      ? Text("No Image is picked")
+                  child: imageFile == null ?
+                       Text("No Image is picked")
                       : ImageSlider().createImageItem(imageFile.path),
                 ),
               ),

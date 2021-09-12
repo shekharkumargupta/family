@@ -1,6 +1,6 @@
 class Media {
 
-  int id;
+  int id = 0;
   String _type;
   String _url;
 
