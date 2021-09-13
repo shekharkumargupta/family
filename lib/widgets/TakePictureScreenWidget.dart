@@ -152,8 +152,10 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
               ),
             ),
           ),
+
           _captureControlRowWidget(),
-          _modeControlRowWidget(),
+          //_modeControlRowWidget(),
+
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: Row(
@@ -164,6 +166,8 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
               ],
             ),
           ),
+
+
         ],
       ),
     );

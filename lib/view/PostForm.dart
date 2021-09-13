@@ -38,32 +38,26 @@ class PostFormState extends State<PostForm> {
             try {
               WidgetsFlutterBinding.ensureInitialized();
               cameras = await availableCameras();
+              print("Number of cameras: " + cameras.length.toString());
+              /*
+              Navigator.push(context,
+                MaterialPageRoute(builder: (context) => TakePictureScreenWidget(cameras)),
+              );
+              */
             } on CameraException catch (e) {
               //print(e.code + " " + e.description);
               print(e);
             }
           }
+
           Navigator.push(context,
             MaterialPageRoute(builder: (context) => TakePictureScreenWidget(cameras)),
           );
+
         },
-        child: const Icon(Icons.person_add),
+        child: const Icon(Icons.camera_alt),
         backgroundColor: Colors.indigo,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.camera_alt),
-            label: 'Take Photo',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.photo_album),
-            label: 'From Gallary',
-          )
-        ],
-        currentIndex: selectedIndex,
-        onTap: onItemTapped,
-      ),
+      )
     );
   }
 
