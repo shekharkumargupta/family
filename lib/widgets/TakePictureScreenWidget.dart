@@ -42,6 +42,8 @@ class TakePictureScreenWidget extends StatefulWidget {
 class TakePictureScreenState extends State<TakePictureScreenWidget>
     with WidgetsBindingObserver, TickerProviderStateMixin {
   CameraController controller;
+  Future<void> _initializeControllerFuture;
+
   XFile imageFile;
   XFile videoFile;
   VideoPlayerController videoController;
@@ -70,6 +72,14 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
   void initState() {
     super.initState();
     _ambiguate(WidgetsBinding.instance)?.addObserver(this);
+
+    /*
+    controller = CameraController(
+      widget.cameras.first,
+      ResolutionPreset.medium,
+    );
+    _initializeControllerFuture = controller.initialize();
+    */
 
     _flashModeControlRowAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -130,6 +140,7 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
       appBar: AppBar(
         title: const Text('Camera example'),
       ),
+
       body: Column(
         children: <Widget>[
           Expanded(
@@ -175,15 +186,25 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
 
   Widget _cameraPreviewWidget() {
     final CameraController cameraController = controller;
+    /*
+    final CameraController cameraController = CameraController(
+      widget.cameras.first,
+      ResolutionPreset.medium,
+    );
+    */
 
     if (cameraController == null || !cameraController.value.isInitialized) {
-      return const Text(
-        'Tap a camera',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 24.0,
-          fontWeight: FontWeight.w900,
-        ),
+      return FutureBuilder<void> (
+        future: _initializeControllerFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            // If the Future is complete, display the preview.
+            return CameraPreview(controller);
+          } else {
+            // Otherwise, display a loading indicator.
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
       );
     } else {
       return Listener(
