@@ -6,11 +6,12 @@ import 'DisplayPictureScreen.dart';
 
 class TakePictureScreen extends StatefulWidget {
 
-  CameraDescription camera;
+  final CameraDescription camera;
 
-  TakePictureScreen(CameraDescription camera){
-    this.camera = camera;
-  }
+  const TakePictureScreen({
+    Key key,
+    this.camera,
+  }) : super(key: key);
 
 
   @override

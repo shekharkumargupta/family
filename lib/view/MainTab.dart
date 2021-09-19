@@ -1,23 +1,52 @@
+
+import 'package:camera/camera.dart';
 import 'package:family/view/MediaList.dart';
 import 'package:family/view/PeopleList.dart';
 import 'package:family/view/PostList.dart';
+import 'package:family/widgets/TakePictureScreenWidget.dart';
 import 'package:flutter/material.dart';
 
-class MainTab extends StatelessWidget {
 
-  MainTab(){}
+class MainTab extends StatefulWidget {
 
-  int selectedTabIndex = 0;
+  final List<CameraDescription> cameras;
+  const MainTab({
+    Key key,
+    this.cameras
+  }) : super(key: key);
+
 
   @override
-  Widget build(BuildContext context){
+  State<StatefulWidget> createState() {
+    return MainTabState();
+  }
+}
+
+class MainTabState extends State<MainTab>{
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.light(),
+      home: TakePictureScreenWidget(),
+    );
+  }
+
+}
+
+
+/*
+class MainTabState extends State<MainTab> {
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        theme: ThemeData.light(),
         home: DefaultTabController(
           length: 3,
           child: new Scaffold(
             body: new NestedScrollView(
-              headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+              headerSliverBuilder: (BuildContext context,
+                  bool innerBoxIsScrolled) {
                 return <Widget>[
                   new SliverAppBar(
                     title: Text("Smile"),
@@ -37,10 +66,10 @@ class MainTab extends StatelessWidget {
               body: new TabBarView(
                 children: <Widget>[
                   Center(
-                    child: PostList(),
+                    child: PostList(cameras: widget.cameras),
                   ),
                   Center(
-                    child: PeopleList()
+                      child: PeopleList()
                   ),
                   Center(
                     child: MediaList(),
@@ -49,10 +78,9 @@ class MainTab extends StatelessWidget {
               ),
             ),
 
-
-
           ),
         )
     );
   }
 }
+*/

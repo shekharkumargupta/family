@@ -1,13 +1,20 @@
+import 'package:camera/camera.dart';
 import 'package:family/model/Post.dart';
 import 'package:family/service/PostService.dart';
 import 'package:family/view/PostListItem.dart';
-import 'package:flutter/material.dart' show BuildContext, Colors, FloatingActionButton, Icon, Icons, ListView, MaterialPageRoute, Navigator, Scaffold, State, StatefulWidget, Widget;
+import 'package:flutter/material.dart';
 
 import 'PostForm.dart';
 
 class PostList extends StatefulWidget{
 
-  PostList();
+  final List<CameraDescription> cameras;
+
+  const PostList({
+    Key key,
+    this.cameras
+  }) : super(key: key);
+
 
   @override
   State<StatefulWidget> createState() {
@@ -27,7 +34,8 @@ class PostState extends State<PostList> {
           onPressed: (){
             //print('Current index ${selectedTabIndex}');
             Navigator.push(context,
-              MaterialPageRoute(builder: (context) => PostForm()),
+              MaterialPageRoute(builder: (context) =>
+                  PostForm(cameras: widget.cameras)),
             );
           },
           child: const Icon(Icons.add),

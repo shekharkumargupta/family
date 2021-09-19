@@ -5,16 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class TakePictureScreenWidget extends StatefulWidget {
-  List<CameraDescription> cameras;
 
-  TakePictureScreenWidget(List<CameraDescription> cameras){
-    this.cameras = cameras;
-  }
+  final List<CameraDescription> cameras;
+
+
+  const TakePictureScreenWidget({
+    Key key,
+    this.cameras
+  }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return TakePictureScreenState();
-  }
+  TakePictureScreenState createState() => TakePictureScreenState();
 
   /// Returns a suitable camera icon for [direction].
   IconData getCameraLensIcon(CameraLensDirection direction) {
@@ -41,8 +42,9 @@ class TakePictureScreenWidget extends StatefulWidget {
 
 class TakePictureScreenState extends State<TakePictureScreenWidget>
     with WidgetsBindingObserver, TickerProviderStateMixin {
+
   CameraController controller;
-  Future<void> _initializeControllerFuture;
+  //Future<void> _initializeControllerFuture;
 
   XFile imageFile;
   XFile videoFile;
@@ -73,9 +75,10 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
     super.initState();
     _ambiguate(WidgetsBinding.instance)?.addObserver(this);
 
+
     /*
     controller = CameraController(
-      widget.cameras.first,
+      widget.firstCamera,
       ResolutionPreset.medium,
     );
     _initializeControllerFuture = controller.initialize();
@@ -165,7 +168,7 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
           ),
 
           _captureControlRowWidget(),
-          //_modeControlRowWidget(),
+          _modeControlRowWidget(),
 
           Padding(
             padding: const EdgeInsets.all(5.0),
@@ -185,26 +188,16 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
   }
 
   Widget _cameraPreviewWidget() {
-    final CameraController cameraController = controller;
-    /*
-    final CameraController cameraController = CameraController(
-      widget.cameras.first,
-      ResolutionPreset.medium,
-    );
-    */
+    CameraController cameraController = controller;
 
     if (cameraController == null || !cameraController.value.isInitialized) {
-      return FutureBuilder<void> (
-        future: _initializeControllerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            // If the Future is complete, display the preview.
-            return CameraPreview(controller);
-          } else {
-            // Otherwise, display a loading indicator.
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
+      return const Text(
+        'Tap a camera',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 24.0,
+          fontWeight: FontWeight.w900,
+        ),
       );
     } else {
       return Listener(
@@ -584,10 +577,10 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
       if (description == null) {
         return;
       }
-
       onNewCameraSelected(description);
     };
 
+    /*
     if (widget.cameras.isEmpty) {
       return const Text('No camera found');
     } else {
@@ -604,6 +597,21 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
           ),
         );
       }
+    }
+    */
+
+    for (CameraDescription cameraDescription in widget.cameras) {
+      toggles.add(
+        SizedBox(
+          width: 90.0,
+          child: RadioListTile<CameraDescription>(
+              title: Icon(widget.getCameraLensIcon(cameraDescription.lensDirection)),
+              groupValue: controller.description,
+              value: cameraDescription,
+              onChanged: onChanged(cameraDescription)
+          ),
+        ),
+      );
     }
 
     return Row(children: toggles);

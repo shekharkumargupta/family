@@ -2,11 +2,19 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:family/widgets/ImageSlider.dart';
+import 'package:family/widgets/TakePictureScreen.dart';
 import 'package:family/widgets/TakePictureScreenWidget.dart';
 import 'package:flutter/material.dart';
 
 
 class PostForm extends StatefulWidget {
+
+  final List<CameraDescription> cameras;
+
+  const PostForm({
+    Key key,
+    this.cameras,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -32,28 +40,10 @@ class PostFormState extends State<PostForm> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
-          List<CameraDescription> cameras = [];
-          Future<void> main() async {
-            // Fetch the available cameras before initializing the app.
-            try {
-              WidgetsFlutterBinding.ensureInitialized();
-              cameras = await availableCameras();
-              print("Number of cameras: " + cameras.length.toString());
-              /*
-              Navigator.push(context,
-                MaterialPageRoute(builder: (context) => TakePictureScreenWidget(cameras)),
-              );
-              */
-            } on CameraException catch (e) {
-              //print(e.code + " " + e.description);
-              print(e);
-            }
-          }
-
-          Navigator.push(context,
-            MaterialPageRoute(builder: (context) => TakePictureScreenWidget(cameras)),
-          );
-
+            Navigator.push(context,
+              MaterialPageRoute(builder: (context) =>
+                  TakePictureScreenWidget()),
+            );
         },
         child: const Icon(Icons.camera_alt),
         backgroundColor: Colors.indigo,
