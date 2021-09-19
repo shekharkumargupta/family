@@ -8,16 +8,13 @@ import 'package:flutter/material.dart';
 
 
 List<CameraDescription> cameras = [];
+CameraDescription firstCamera;
 
 Future<void> main() async {
-  CameraDescription firstCamera;
-  // Fetch the available cameras before initializing the app.
   try {
     WidgetsFlutterBinding.ensureInitialized();
     cameras = await availableCameras().then ((cameras) {
       firstCamera = cameras.first;
-      //print("FirstCamera: " + firstCamera.name);
-
     }).catchError((e) {
       print('Error Camera:$e');
     });
@@ -25,17 +22,17 @@ Future<void> main() async {
     print(e);
   }
 
-
-
   runApp(
       MaterialApp(
-        title: 'Test Camera',
-        builder: (context, child) =>
-            //TakePictureScreen(camera: firstCamera)
-            TakePictureScreenWidget(cameras: cameras, firstCamera: firstCamera)
-            //MainTab(cameras: cameras, firstCamera: firstCamera)
+          title: 'Test Camera',
+          builder: (context, child) =>
+          //TakePictureScreen(camera: firstCamera)
+          TakePictureScreenWidget(cameras: cameras, firstCamera: firstCamera)
+        //MainTab(cameras: cameras, firstCamera: firstCamera)
       )
   );
+
+
 }
 
 

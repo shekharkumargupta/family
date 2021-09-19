@@ -76,13 +76,11 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
     super.initState();
     _ambiguate(WidgetsBinding.instance)?.addObserver(this);
 
-    /*
+
     controller = CameraController(
       widget.firstCamera,
       ResolutionPreset.medium,
     );
-    */
-
     //_initializeControllerFuture = controller.initialize();
 
 
@@ -279,8 +277,7 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
   /// Display a bar with buttons to change the flash and exposure modes
   Widget _modeControlRowWidget() {
 
-    CameraController cameraController =
-        CameraController(widget.firstCamera, ResolutionPreset.medium);
+    CameraController cameraController = controller;
 
     return Column(
       children: [
@@ -329,8 +326,7 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
 
   Widget _flashModeControlRowWidget() {
 
-    CameraController cameraController =
-    CameraController(widget.firstCamera, ResolutionPreset.medium);
+    CameraController cameraController = controller;
 
     /*
     return SizeTransition(
@@ -433,8 +429,7 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
 
   Widget _exposureModeControlRowWidget() {
 
-    CameraController cameraController =
-    CameraController(widget.firstCamera, ResolutionPreset.medium);
+    CameraController cameraController = controller;
 
     final ButtonStyle styleAuto = TextButton.styleFrom(
       primary: cameraController.value.exposureMode == ExposureMode.auto
@@ -522,8 +517,7 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
 
   Widget _focusModeControlRowWidget() {
 
-    CameraController cameraController =
-    CameraController(widget.firstCamera, ResolutionPreset.medium);
+    CameraController cameraController = controller;
 
     final ButtonStyle styleAuto = TextButton.styleFrom(
       primary: cameraController.value.focusMode == FocusMode.auto
@@ -642,8 +636,7 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
   /// Display a row of toggle to select the camera (or a message if no camera is available).
   Widget _cameraTogglesRowWidget() {
 
-    CameraController cameraController =
-    CameraController(widget.firstCamera, ResolutionPreset.medium);
+    CameraController cameraController = controller;
 
     final List<Widget> toggles = <Widget>[];
 
@@ -674,15 +667,14 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
     }*/
 
 
-
     toggles.add(
       SizedBox(
         width: 90.0,
         child: RadioListTile<CameraDescription>(
             title: Icon(Icons.filter_center_focus),
             groupValue: cameraController.description,
-            value: widget.firstCamera,
-            onChanged: onChanged(widget.firstCamera)
+            value: cameraController.description,
+            onChanged: onChanged(cameraController.description)
         ),
       ),
     );
@@ -714,6 +706,7 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
   }
 
   void onNewCameraSelected(CameraDescription cameraDescription) async {
+
     if (controller != null) {
       await controller.dispose();
     }
