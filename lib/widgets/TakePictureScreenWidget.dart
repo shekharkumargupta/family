@@ -7,11 +7,12 @@ import 'package:video_player/video_player.dart';
 class TakePictureScreenWidget extends StatefulWidget {
 
   final List<CameraDescription> cameras;
-
+  final CameraDescription firstCamera;
 
   const TakePictureScreenWidget({
     Key key,
-    this.cameras
+    this.cameras,
+    this.firstCamera
   }) : super(key: key);
 
   @override
@@ -44,7 +45,7 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
     with WidgetsBindingObserver, TickerProviderStateMixin {
 
   CameraController controller;
-  //Future<void> _initializeControllerFuture;
+  Future<void> _initializeControllerFuture;
 
   XFile imageFile;
   XFile videoFile;
@@ -75,14 +76,16 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
     super.initState();
     _ambiguate(WidgetsBinding.instance)?.addObserver(this);
 
-
     /*
     controller = CameraController(
       widget.firstCamera,
       ResolutionPreset.medium,
     );
-    _initializeControllerFuture = controller.initialize();
     */
+
+    //_initializeControllerFuture = controller.initialize();
+
+
 
     _flashModeControlRowAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -108,6 +111,7 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
       parent: _focusModeControlRowAnimationController,
       curve: Curves.easeInCubic,
     );
+
   }
 
   @override
@@ -274,6 +278,10 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
 
   /// Display a bar with buttons to change the flash and exposure modes
   Widget _modeControlRowWidget() {
+
+    CameraController cameraController =
+        CameraController(widget.firstCamera, ResolutionPreset.medium);
+
     return Column(
       children: [
         Row(
@@ -283,30 +291,30 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
             IconButton(
               icon: Icon(Icons.flash_on),
               color: Colors.blue,
-              onPressed: controller != null ? onFlashModeButtonPressed : null,
+              onPressed: cameraController != null ? onFlashModeButtonPressed : null,
             ),
             IconButton(
               icon: Icon(Icons.exposure),
               color: Colors.blue,
               onPressed:
-                  controller != null ? onExposureModeButtonPressed : null,
+              cameraController != null ? onExposureModeButtonPressed : null,
             ),
             IconButton(
               icon: Icon(Icons.filter_center_focus),
               color: Colors.blue,
-              onPressed: controller != null ? onFocusModeButtonPressed : null,
+              onPressed: cameraController != null ? onFocusModeButtonPressed : null,
             ),
             IconButton(
               icon: Icon(enableAudio ? Icons.volume_up : Icons.volume_mute),
               color: Colors.blue,
-              onPressed: controller != null ? onAudioModeButtonPressed : null,
+              onPressed: cameraController != null ? onAudioModeButtonPressed : null,
             ),
             IconButton(
-              icon: Icon(controller.value.isCaptureOrientationLocked
+              icon: Icon(cameraController.value.isCaptureOrientationLocked
                   ? Icons.screen_lock_rotation
                   : Icons.screen_rotation),
               color: Colors.blue,
-              onPressed: controller != null
+              onPressed: cameraController != null
                   ? onCaptureOrientationLockButtonPressed
                   : null,
             ),
@@ -320,6 +328,11 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
   }
 
   Widget _flashModeControlRowWidget() {
+
+    CameraController cameraController =
+    CameraController(widget.firstCamera, ResolutionPreset.medium);
+
+    /*
     return SizeTransition(
       sizeFactor: _flashModeControlRowAnimation,
       child: ClipRect(
@@ -367,16 +380,69 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
         ),
       ),
     );
+    */
+
+
+
+    return ClipRect(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          IconButton(
+            icon: Icon(Icons.flash_off),
+            color: cameraController.value.flashMode == FlashMode.off
+                ? Colors.orange
+                : Colors.blue,
+            onPressed: cameraController != null
+                ? () => onSetFlashModeButtonPressed(FlashMode.off)
+                : null,
+          ),
+          IconButton(
+            icon: Icon(Icons.flash_auto),
+            color: cameraController.value.flashMode == FlashMode.auto
+                ? Colors.orange
+                : Colors.blue,
+            onPressed: controller != null
+                ? () => onSetFlashModeButtonPressed(FlashMode.auto)
+                : null,
+          ),
+          IconButton(
+            icon: Icon(Icons.flash_on),
+            color: cameraController.value.flashMode == FlashMode.always
+                ? Colors.orange
+                : Colors.blue,
+            onPressed: cameraController != null
+                ? () => onSetFlashModeButtonPressed(FlashMode.always)
+                : null,
+          ),
+          IconButton(
+            icon: Icon(Icons.highlight),
+            color: cameraController.value.flashMode == FlashMode.torch
+                ? Colors.orange
+                : Colors.blue,
+            onPressed: cameraController != null
+                ? () => onSetFlashModeButtonPressed(FlashMode.torch)
+                : null,
+          ),
+        ],
+      ),
+    );
+
   }
 
   Widget _exposureModeControlRowWidget() {
+
+    CameraController cameraController =
+    CameraController(widget.firstCamera, ResolutionPreset.medium);
+
     final ButtonStyle styleAuto = TextButton.styleFrom(
-      primary: controller.value.exposureMode == ExposureMode.auto
+      primary: cameraController.value.exposureMode == ExposureMode.auto
           ? Colors.orange
           : Colors.blue,
     );
     final ButtonStyle styleLocked = TextButton.styleFrom(
-      primary: controller.value.exposureMode == ExposureMode.locked
+      primary: cameraController.value.exposureMode == ExposureMode.locked
           ? Colors.orange
           : Colors.blue,
     );
@@ -398,13 +464,13 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
                   TextButton(
                     child: Text('AUTO'),
                     style: styleAuto,
-                    onPressed: controller != null
+                    onPressed: cameraController != null
                         ? () =>
                             onSetExposureModeButtonPressed(ExposureMode.auto)
                         : null,
                     onLongPress: () {
-                      if (controller != null) {
-                        controller.setExposurePoint(null);
+                      if (cameraController != null) {
+                        cameraController.setExposurePoint(null);
                         showInSnackBar('Resetting exposure point');
                       }
                     },
@@ -420,8 +486,8 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
                   TextButton(
                     child: Text('RESET OFFSET'),
                     style: styleLocked,
-                    onPressed: controller != null
-                        ? () => controller.setExposureOffset(0.0)
+                    onPressed: cameraController != null
+                        ? () => cameraController.setExposureOffset(0.0)
                         : null,
                   ),
                 ],
@@ -455,13 +521,17 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
   }
 
   Widget _focusModeControlRowWidget() {
+
+    CameraController cameraController =
+    CameraController(widget.firstCamera, ResolutionPreset.medium);
+
     final ButtonStyle styleAuto = TextButton.styleFrom(
-      primary: controller.value.focusMode == FocusMode.auto
+      primary: cameraController.value.focusMode == FocusMode.auto
           ? Colors.orange
           : Colors.blue,
     );
     final ButtonStyle styleLocked = TextButton.styleFrom(
-      primary: controller.value.focusMode == FocusMode.locked
+      primary: cameraController.value.focusMode == FocusMode.locked
           ? Colors.orange
           : Colors.blue,
     );
@@ -483,18 +553,18 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
                   TextButton(
                     child: Text('AUTO'),
                     style: styleAuto,
-                    onPressed: controller != null
+                    onPressed: cameraController != null
                         ? () => onSetFocusModeButtonPressed(FocusMode.auto)
                         : null,
                     onLongPress: () {
-                      if (controller != null) controller.setFocusPoint(null);
+                      if (cameraController != null) cameraController.setFocusPoint(null);
                       showInSnackBar('Resetting focus point');
                     },
                   ),
                   TextButton(
                     child: Text('LOCKED'),
                     style: styleLocked,
-                    onPressed: controller != null
+                    onPressed: cameraController != null
                         ? () => onSetFocusModeButtonPressed(FocusMode.locked)
                         : null,
                   ),
@@ -571,6 +641,10 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
 
   /// Display a row of toggle to select the camera (or a message if no camera is available).
   Widget _cameraTogglesRowWidget() {
+
+    CameraController cameraController =
+    CameraController(widget.firstCamera, ResolutionPreset.medium);
+
     final List<Widget> toggles = <Widget>[];
 
     final onChanged = (CameraDescription description) {
@@ -590,29 +664,29 @@ class TakePictureScreenState extends State<TakePictureScreenWidget>
             width: 90.0,
             child: RadioListTile<CameraDescription>(
               title: Icon(widget.getCameraLensIcon(cameraDescription.lensDirection)),
-              groupValue: controller.description,
+              groupValue: cameraController.description,
               value: cameraDescription,
               onChanged: onChanged(cameraDescription)
             ),
           ),
         );
       }
-    }
-    */
+    }*/
 
-    for (CameraDescription cameraDescription in widget.cameras) {
-      toggles.add(
-        SizedBox(
-          width: 90.0,
-          child: RadioListTile<CameraDescription>(
-              title: Icon(widget.getCameraLensIcon(cameraDescription.lensDirection)),
-              groupValue: controller.description,
-              value: cameraDescription,
-              onChanged: onChanged(cameraDescription)
-          ),
+
+
+    toggles.add(
+      SizedBox(
+        width: 90.0,
+        child: RadioListTile<CameraDescription>(
+            title: Icon(Icons.filter_center_focus),
+            groupValue: cameraController.description,
+            value: widget.firstCamera,
+            onChanged: onChanged(widget.firstCamera)
         ),
-      );
-    }
+      ),
+    );
+
 
     return Row(children: toggles);
   }

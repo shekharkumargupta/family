@@ -42,6 +42,7 @@ dependencies:
   path: any
   path_provider: any
   video_player: any
+  ##ticker_provider: any
 
 dev_dependencies:
   flutter_test:

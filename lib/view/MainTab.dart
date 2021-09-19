@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 class MainTab extends StatefulWidget {
 
   final List<CameraDescription> cameras;
+
   const MainTab({
     Key key,
     this.cameras
@@ -27,7 +28,7 @@ class MainTabState extends State<MainTab>{
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: TakePictureScreenWidget(),
+      home: TakePictureScreenWidget(cameras: widget.cameras),
     );
   }
 
