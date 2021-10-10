@@ -1,21 +1,21 @@
 
-import 'package:camera/camera.dart';
 import 'package:family/view/MediaList.dart';
 import 'package:family/view/PeopleList.dart';
 import 'package:family/view/PostList.dart';
-import 'package:family/widgets/TakePictureScreenWidget.dart';
 import 'package:flutter/material.dart';
 
 
 class MainTab extends StatefulWidget {
 
-  final List<CameraDescription> cameras;
+  /*
+  List<CameraDescription> cameras;
+  CameraDescription firstCamera;
 
-  const MainTab({
-    Key key,
-    this.cameras
-  }) : super(key: key);
-
+  MainTab(List<CameraDescription> cameras, CameraDescription firstCamera){
+    this.cameras = cameras;
+    this.firstCamera = firstCamera;
+  }
+  */
 
   @override
   State<StatefulWidget> createState() {
@@ -23,19 +23,22 @@ class MainTab extends StatefulWidget {
   }
 }
 
+/*
 class MainTabState extends State<MainTab>{
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: TakePictureScreenWidget(cameras: widget.cameras),
+      //home: TakePictureScreenWidget(cameras: widget.cameras),
+      home: TakePictureServiceWidget(widget.firstCamera)
     );
   }
 
 }
+*/
 
 
-/*
+
 class MainTabState extends State<MainTab> {
 
   @override
@@ -67,7 +70,7 @@ class MainTabState extends State<MainTab> {
               body: new TabBarView(
                 children: <Widget>[
                   Center(
-                    child: PostList(cameras: widget.cameras),
+                    child: PostList(),
                   ),
                   Center(
                       child: PeopleList()
@@ -84,4 +87,4 @@ class MainTabState extends State<MainTab> {
     );
   }
 }
-*/
+

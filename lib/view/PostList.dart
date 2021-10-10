@@ -8,14 +8,6 @@ import 'PostForm.dart';
 
 class PostList extends StatefulWidget{
 
-  final List<CameraDescription> cameras;
-
-  const PostList({
-    Key key,
-    this.cameras
-  }) : super(key: key);
-
-
   @override
   State<StatefulWidget> createState() {
       return PostState();
@@ -35,7 +27,7 @@ class PostState extends State<PostList> {
             //print('Current index ${selectedTabIndex}');
             Navigator.push(context,
               MaterialPageRoute(builder: (context) =>
-                  PostForm(cameras: widget.cameras)),
+                  PostForm()),
             );
           },
           child: const Icon(Icons.add),

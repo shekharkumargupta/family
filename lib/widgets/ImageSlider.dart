@@ -34,7 +34,7 @@ class ImageSlider {
     return widgetList;
   }
 
-  createImageItem(String imageUrl){
+   createImageItem(String imageUrl){
     return Container(
       alignment: Alignment.center,
       decoration: BoxDecoration(color: Colors.white),
@@ -42,7 +42,7 @@ class ImageSlider {
         future: ImageWidget().createImageWidget(imageUrl),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return snapshot.data;
+            return Image.network(imageUrl);
           } else {
             return  LoadingRotating.square(
               size: 40,

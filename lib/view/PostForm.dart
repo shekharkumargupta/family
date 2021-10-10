@@ -1,20 +1,10 @@
 import 'dart:io';
 
-import 'package:camera/camera.dart';
-import 'package:family/widgets/ImageSlider.dart';
-import 'package:family/widgets/TakePictureScreen.dart';
-import 'package:family/widgets/TakePictureScreenWidget.dart';
+import 'package:family/widgets/CameraExampleHome.dart';
 import 'package:flutter/material.dart';
 
 
 class PostForm extends StatefulWidget {
-
-  final List<CameraDescription> cameras;
-
-  const PostForm({
-    Key key,
-    this.cameras,
-  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -26,7 +16,7 @@ class PostFormState extends State<PostForm> {
 
   final _formKey = GlobalKey<FormState>();
   int selectedIndex = 0;
-  File imageFile;
+  late File imageFile;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +32,10 @@ class PostFormState extends State<PostForm> {
         onPressed: (){
             Navigator.push(context,
               MaterialPageRoute(builder: (context) =>
-                  TakePictureScreenWidget()),
+                  //TakePictureScreenWidget()
+                //TakePictureServiceWidget()
+                CameraExampleHome()
+              ),
             );
         },
         child: const Icon(Icons.camera_alt),
@@ -77,7 +70,8 @@ class PostFormState extends State<PostForm> {
                 child: Center(
                   child: imageFile == null ?
                        Text("No Image is picked")
-                      : ImageSlider().createImageItem(imageFile.path),
+                      //: ImageSlider().createImageItem(imageFile.path),
+                        : Text("Image picked but check the code here")
                 ),
               ),
             ),

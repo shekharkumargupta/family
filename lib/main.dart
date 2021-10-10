@@ -1,38 +1,60 @@
 
 import 'package:camera/camera.dart';
-import 'package:family/view/MainTab.dart';
-import 'package:family/widgets/TakePictureScreen.dart';
-import 'package:family/widgets/TakePictureScreenWidget.dart';
+import 'package:family/widgets/CameraScreen.dart';
 import 'package:flutter/material.dart';
 
-
-
 List<CameraDescription> cameras = [];
-CameraDescription firstCamera;
+late CameraDescription firstCamera;
 
-Future<void> main() async {
+Future<void> main() async{
+  /*
   try {
     WidgetsFlutterBinding.ensureInitialized();
-    cameras = await availableCameras().then ((cameras) {
-      firstCamera = cameras.first;
+    availableCameras().then((availableCameras) {
+      cameras = availableCameras;
+    }).catchError((err) {
+      print('Error: $err.code\nError Message: $err.message');
+    });
+  } on CameraException catch (e) {
+    print('Error in fetching the cameras: $e');
+  }
+  */
+  runApp(MyApp());
+}
+
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      debugShowCheckedModeBanner: false,
+      home: CameraScreen(),
+    );
+  }
+}
+
+
+
+
+
+
+/*
+Future<void> initializeCamera() async {
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
+    widget.cameras = await availableCameras().then((cameras) {
+      widget.firstCamera = cameras.first;
+      controller = CameraController(widget.firstCamera, ResolutionPreset.medium);
+      _initializeControllerFuture = controller.initialize();
     }).catchError((e) {
       print('Error Camera:$e');
     });
   } on CameraException catch (e) {
     print(e);
   }
-
-  runApp(
-      MaterialApp(
-          title: 'Test Camera',
-          builder: (context, child) =>
-          //TakePictureScreen(camera: firstCamera)
-          TakePictureScreenWidget(cameras: cameras, firstCamera: firstCamera)
-        //MainTab(cameras: cameras, firstCamera: firstCamera)
-      )
-  );
-
-
 }
-
-
+*/

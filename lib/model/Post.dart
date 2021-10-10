@@ -7,9 +7,9 @@ class Post {
 
   String _text;
   String _postedBy;
-  Set<Person> _likers;
-  List<Comment> _comments;
-  List<Media> _medias;
+  Set<Person> _likers = {};
+  List<Comment> _comments = [];
+  List<Media> _medias = [];
 
 
   int _likesCount;

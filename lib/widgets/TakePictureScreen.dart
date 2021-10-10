@@ -5,7 +5,13 @@ import 'DisplayPictureScreen.dart';
 
 
 class TakePictureScreen extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    throw UnimplementedError();
+  }
 
+  /*
   final CameraDescription camera;
 
   const TakePictureScreen({
@@ -92,4 +98,5 @@ class TakePictureScreenState extends State<TakePictureScreen> {
       ),
     );
   }
+  */
 }

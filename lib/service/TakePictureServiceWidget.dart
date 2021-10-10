@@ -1,4 +1,3 @@
-// ignore_for_file: must_be_immutable
 import 'dart:io';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -7,13 +6,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
+
 class TakePictureServiceWidget extends StatefulWidget{
-
-  CameraDescription camera;
-
-  TakePictureServiceWidget(camera){
-    this.camera = camera;
-  }
 
   @override
   State<StatefulWidget> createState() {
@@ -27,61 +21,50 @@ class TakePictureServiceWidgetState extends State<TakePictureServiceWidget>{
   bool start = false;
   bool isRec = false;
 
-  CameraController cameraController;
-  Future<void> initializeCameraControllerFuture;
-  Future<Directory> videoDirectoryPath;
-  String fileName;
+  late List<CameraDescription> cameras = [];
+  late CameraDescription firstCamera;
 
-  @override
-  void initState() {
-    super.initState();
+  late CameraController cameraController;
+  late Future<void> initializeCameraControllerFuture;
+  late Future<Directory> videoDirectoryPath;
 
-    cameraController =
-        CameraController(widget.camera, ResolutionPreset.medium);
+  late XFile imageFile;
+  late XFile videoFile;
 
-    initializeCameraControllerFuture = cameraController.initialize();
-    //fileInit();
-  }
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-
-  void fileInit() async {
-    fileName = DateTime.now() as String;
-    videoDirectoryPath = join((await getTemporaryDirectory()).path, '${fileName}.mp4') as Future<Directory>;
-  }
-
-  void takePicture(BuildContext context) async {
+  Future<void> initializeCamera() async {
     try {
-      await initializeCameraControllerFuture;
-
-      if (selectedIndex == 0) {
-        // capture picture
-        await cameraController.takePicture();
-        Navigator.pop(context);
-      } else {
-        //video recording
-        if (start) {
-        //start recording
-          await cameraController.startVideoRecording();
-          setState(() {
-            start = !start;
-            isRec = !isRec;
-          });
-        } else {
-          // stop recording
-          cameraController.stopVideoRecording();
-          setState(() {
-            isRec = !isRec;
-          });
-          Navigator.pop(context);
-        }
-      }
-    } catch (e) {
+      WidgetsFlutterBinding.ensureInitialized();
+      cameras = await availableCameras();
+    } on CameraException catch (e) {
       print(e);
     }
   }
 
   @override
+  void initState() {
+    super.initState();
+    initializeCamera();
+
+    firstCamera = cameras.first;
+    cameraController = CameraController(firstCamera, ResolutionPreset.high);
+    initializeCameraControllerFuture = cameraController.initialize();
+  }
+
+  @override
+  void dispose() {
+    // Dispose of the controller when the widget is disposed.
+    cameraController.dispose();
+    super.dispose();
+  }
+
+
+
+
+  @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -91,7 +74,7 @@ class TakePictureServiceWidgetState extends State<TakePictureServiceWidget>{
               if (snapshot.connectionState == ConnectionState.done) {
                 return CameraPreview(cameraController);
               } else {
-                return Center(child: CircularProgressIndicator());
+                return Center(child: CircularProgressIndicator(backgroundColor: Colors.black,));
               }
             },
           ),
@@ -102,16 +85,17 @@ class TakePictureServiceWidgetState extends State<TakePictureServiceWidget>{
                 padding: const EdgeInsets.all(8.0),
                 child: FloatingActionButton(
                   backgroundColor: Colors.orange,
-                  // child: Icon(Icons.camera_alt, color: Colors.white),
+                  child: Icon(Icons.camera_alt, color: Colors.white),
                   onPressed: () {
-                    takePicture(context);
+                    //takePicture(context);
+                    takePicture2();
                   },
                 ),
               ),
             ),
           ),
           isRec == true ?
-               SafeArea(
+          SafeArea(
             child: Container(
               height: 40,
               // alignment: Alignment.topLeft,
@@ -131,26 +115,27 @@ class TakePictureServiceWidgetState extends State<TakePictureServiceWidget>{
               ),
             ),
           )
-              : SizedBox(
-            height: 0,
+          : SizedBox(
+            height: 20,
           )
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.camera),
-            title: Text('Picture'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.videocam),
-            title: Text('Video'),
-          ),
-        ],
-        currentIndex: selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        onTap: onItemTapped,
-      ),
+      bottomNavigationBar:
+              BottomNavigationBar(
+                items: const <BottomNavigationBarItem>[
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.camera),
+                    title: Text('Picture'),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.videocam),
+                    title: Text('Video'),
+                  ),
+                ],
+                currentIndex: selectedIndex,
+                selectedItemColor: Colors.amber[800],
+                onTap: onItemTapped,
+              ),
     );
   }
 
@@ -158,6 +143,71 @@ class TakePictureServiceWidgetState extends State<TakePictureServiceWidget>{
     setState(() {
       selectedIndex = index;
     });
+  }
+
+  void showInSnackBar(String message) {
+    // ignore: deprecated_member_use
+    _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(message)));
+  }
+
+
+  void takePicture(BuildContext context) async {
+    try {
+      await initializeCameraControllerFuture;
+
+      if (selectedIndex == 0) {
+        // capture picture
+        await cameraController.takePicture().then((XFile file) {
+          if (mounted) {
+            setState(() {
+              imageFile = file;
+              //videoController.dispose();
+            });
+            if (file != null) showInSnackBar('Picture saved to ${file.path}');
+          }
+        });
+        Navigator.pop(context);
+      } else {
+        //video recording
+        if (start) {
+          //start recording
+          await cameraController.startVideoRecording();
+          setState(() {
+            start = !start;
+            isRec = !isRec;
+          });
+        } else {
+          // stop recording
+          cameraController.stopVideoRecording();
+          setState(() {
+            isRec = !isRec;
+          });
+          Navigator.pop(context);
+        }
+      }
+    } catch (e) {
+      showInSnackBar(e.toString());
+    }
+  }
+
+
+  Future<XFile> takePicture2() async {
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      showInSnackBar('Error: select a camera first.');
+    }
+
+    if (cameraController.value.isTakingPicture) {
+      // A capture is already pending, do nothing.
+      //return null;
+    }
+
+    try {
+      XFile file = await cameraController.takePicture();
+      return file;
+    } on CameraException catch (e) {
+      showInSnackBar(e.description.toString());
+      return cameraController.takePicture();
+    }
   }
 
 }
