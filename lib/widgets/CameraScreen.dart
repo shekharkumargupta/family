@@ -147,71 +147,82 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
             //body:_isCameraInitialized
           body:true
                 ?
-                  Column(
+                Center(
+                  child:Container(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
+                    child: Stack(
+                      fit: StackFit.expand,
                       children: [
-                        Stack(
-                          children: [
-                            AspectRatio(
-                              aspectRatio: 2/3,
-                              child: Container(
-                                  child:
-                                  //CameraPreview(controller!),
-                                  //controller!.buildPreview(),
-                                  Text("Hello World")
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 8.0,),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Align(
-                                        alignment: Alignment.topRight,
-                                        child: Container(
-                                            decoration: BoxDecoration(
-                                                color: Colors.black87,
-                                                borderRadius: BorderRadius.circular(10.0)
-                                            ),
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                                              child: createCameraQualityDropDown(),
-                                            )
-                                        )
-                                    )
-                                  ],
-                                ),
-                              ),
+                        //This container is for Camera Preview
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height - 200,
+                          color: Colors.red,
+                        ),
 
-                              /*
-                              //spacer
-                              Padding(
-                                padding: const EdgeInsets.only(right: 8.0, top: 16.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10.0)
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      _currentExposureOffset.toStringAsFixed(1) + 'x',
-                                      style: TextStyle(color: Colors.black),
-                                    )
-                                  ),
-                                ),
-                              ),
-                              */
-                              createCameraZoomSlider(),
-                              createCameraExposureSlider(),
-                              createFlashButtonRow(),
-                              createCameraToggleButton()
-                            ],
-                          ),
+                        //This container is for Flash Buttons
+                        Positioned(
+                          top: 0,
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: 50,
+                            color: Colors.deepPurple,
+                            child: createFlashButtonRow(),
+                          )
+                        ),
+
+
+                        //This container is for Camera Exposure Slider
+                        Positioned(
+                            right: 0,
+                            top: 50,
+                            child: Container(
+                              width: 50,
+                              height: MediaQuery.of(context).size.height - 100,
+                              color: Colors.amber,
+                              child: createCameraExposureSlider(),
+                            )
+                        ),
+
+                        //This container is for Camera Zoom Slider
+                        Positioned(
+                            bottom: 80,
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: 60,
+                              color: Colors.green,
+                              child: createCameraZoomSlider()
+                            )
+                        ),
+
+                        //This container is for Toggle Buttons and Take Picture
+                        Positioned(
+                          bottom: 0,
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: 80,
+                            color: Colors.blue,
+                            child: createCameraToggleButton(),
+                          )
+                        )
+
+
+
+                        /*
+                        createCameraQualityDropDown(),
+                        createCameraZoomSlider(),
+                        createCameraExposureSlider(),
+                        createFlashButtonRow(),
+                        createCameraToggleButton()
+                        */
                       ]
+                    )
                   )
+                )
                 : Center(
                     child: CircularProgressIndicator(backgroundColor: Colors.black,),
-                  )
+                )
 
         )
     );
@@ -247,8 +258,12 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   Widget createCameraZoomSlider(){
     return
       Expanded(
+        flex: 1,
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            createCameraQualityDropDown(),
             Slider(
               value: _currentZoomLevel,
               min: _minAvailableZoom,
@@ -262,20 +277,10 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                 await controller!.setZoomLevel(value);
               },
             ),
-
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.black87,
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  _currentZoomLevel.toStringAsFixed(1) +
-                      'x',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
+            Text(
+              _currentZoomLevel.toStringAsFixed(1) +
+                    'x',
+              style: TextStyle(color: Colors.white,),
             ),
           ],
         )
@@ -284,26 +289,46 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
 
   Widget createCameraExposureSlider(){
     return
-
-        RotatedBox(
-          quarterTurns: 3,
-          child: Container(
-            height: 30,
-            child: Slider(
-              value: _currentExposureOffset,
-              min: _minAvailableExposureOffset,
-              max: _maxAvailableExposureOffset,
-              activeColor: Colors.white,
-              inactiveColor: Colors.white30,
-              onChanged: (value) async {
-                setState(() {
-                  _currentExposureOffset = value;
-                });
-                await controller!.setExposureOffset(value);
-              },
+      Row(
+        children: [
+          RotatedBox(
+            quarterTurns: 3,
+            child: Container(
+              height: 30,
+              child: Slider(
+                value: _currentExposureOffset,
+                min: _minAvailableExposureOffset,
+                max: _maxAvailableExposureOffset,
+                activeColor: Colors.white,
+                inactiveColor: Colors.white30,
+                onChanged: (value) async {
+                  setState(() {
+                    _currentExposureOffset = value;
+                  });
+                  await controller!.setExposureOffset(value);
+                },
+              ),
             ),
           ),
-        );
+
+          //spacer
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0, top: 16.0),
+              child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10.0)
+              ),
+              child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(_currentExposureOffset.toStringAsFixed(1) + 'x',
+                            style: TextStyle(color: Colors.black),
+                        )
+                      ),
+                    ),
+          ),
+        ]
+      );
   }
 
 
