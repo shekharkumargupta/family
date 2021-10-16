@@ -26,9 +26,12 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   double _maxAvailableExposureOffset = 0.0;
   double _currentExposureOffset = 0.0;
 
-  FlashMode? _currentFlashMode;
 
+  FlashMode? _currentFlashMode;
   bool _isRearCameraSelected = true;
+
+  // Counting pointers (number of user fingers on screen)
+  int _pointers = 0;
 
   void initCamera(){
     availableCameras().then((availableCameras)  {
@@ -129,7 +132,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
       cameraController.dispose();
     } else if (state == AppLifecycleState.resumed) {
       // Reinitialize the camera with same properties
-      onNewCameraSelected(cameraController!.description);
+      onNewCameraSelected(cameraController.description);
     }
   }
 
@@ -144,8 +147,8 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   Widget createCameraScreen(){
     return SafeArea(
         child: Scaffold(
-            //body:_isCameraInitialized
-          body:true
+            body:_isCameraInitialized
+            //body:true
                 ?
                 Center(
                   child:Container(
@@ -158,7 +161,8 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                         Container(
                           width: MediaQuery.of(context).size.width,
                           height: MediaQuery.of(context).size.height - 200,
-                          color: Colors.red,
+                          //color: Colors.red,
+                          child: createCameraPreview()
                         ),
 
                         //This container is for Flash Buttons
@@ -167,7 +171,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                           child: Container(
                             width: MediaQuery.of(context).size.width,
                             height: 50,
-                            color: Colors.deepPurple,
+                            //color: Colors.deepPurple,
                             child: createFlashButtonRow(),
                           )
                         ),
@@ -175,58 +179,77 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
 
                         //This container is for Camera Exposure Slider
                         Positioned(
-                            right: 0,
+                            left: 0,
                             top: 50,
                             child: Container(
                               width: 50,
                               height: MediaQuery.of(context).size.height - 100,
-                              color: Colors.amber,
+                              //color: Colors.amber,
                               child: createCameraExposureSlider(),
                             )
                         ),
 
+
                         //This container is for Camera Zoom Slider
                         Positioned(
-                            bottom: 80,
+                            bottom: 0,
                             child: Container(
+                              padding: EdgeInsets.all(15.0),
                               width: MediaQuery.of(context).size.width,
-                              height: 60,
-                              color: Colors.green,
-                              child: createCameraZoomSlider()
+                              height: 120,
+                              //color: Colors.deepPurple,
+                              child: Column(
+                                children: [
+                                  createCameraToggleButton(),
+                                  createCameraZoomSlider()
+                                ],
+                              )
                             )
-                        ),
-
-                        //This container is for Toggle Buttons and Take Picture
-                        Positioned(
-                          bottom: 0,
-                          child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: 80,
-                            color: Colors.blue,
-                            child: createCameraToggleButton(),
-                          )
                         )
 
-
-
-                        /*
-                        createCameraQualityDropDown(),
-                        createCameraZoomSlider(),
-                        createCameraExposureSlider(),
-                        createFlashButtonRow(),
-                        createCameraToggleButton()
-                        */
                       ]
                     )
                   )
                 )
-                : Center(
-                    child: CircularProgressIndicator(backgroundColor: Colors.black,),
+                :
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  color: Colors.black,
+                  child: Center(child: CircularProgressIndicator())
                 )
-
         )
     );
   }
+
+  Widget createCameraPreview() {
+    final CameraController? cameraController = controller;
+
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      return const Text(
+              'Tap a camera',
+              style: TextStyle(color: Colors.white, fontSize: 24.0, fontWeight: FontWeight.w900),
+            );
+    } else {
+          return Listener(
+              onPointerDown: (_) => _currentZoomLevel++,
+              onPointerUp: (_) => _currentZoomLevel--,
+              child: CameraPreview(controller!,
+                      child: LayoutBuilder(
+                              builder: (BuildContext context, BoxConstraints constraints) {
+                                return GestureDetector(
+                                          behavior: HitTestBehavior.opaque,
+                                          onScaleStart: _handleScaleStart,
+                                          onScaleUpdate: _handleScaleUpdate,
+                                          onTapDown: (details) =>
+                                              onViewFinderTap(details, constraints),
+                                        );
+                              }),
+                      ),
+          );
+    }
+  }
+
 
   Widget createCameraQualityDropDown(){
     return DropdownButton<ResolutionPreset>(
@@ -261,7 +284,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
         flex: 1,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             createCameraQualityDropDown(),
             Slider(
@@ -277,10 +300,11 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                 await controller!.setZoomLevel(value);
               },
             ),
+
             Text(
               _currentZoomLevel.toStringAsFixed(1) +
                     'x',
-              style: TextStyle(color: Colors.white,),
+              style: TextStyle(color: Colors.white),
             ),
           ],
         )
@@ -289,12 +313,13 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
 
   Widget createCameraExposureSlider(){
     return
-      Row(
+      Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           RotatedBox(
             quarterTurns: 3,
             child: Container(
-              height: 30,
+              height: 80,
               child: Slider(
                 value: _currentExposureOffset,
                 min: _minAvailableExposureOffset,
@@ -311,22 +336,9 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
             ),
           ),
 
-          //spacer
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0, top: 16.0),
-              child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10.0)
-              ),
-              child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(_currentExposureOffset.toStringAsFixed(1) + 'x',
-                            style: TextStyle(color: Colors.black),
-                        )
-                      ),
-                    ),
-          ),
+          Text(_currentExposureOffset.toStringAsFixed(1) + 'x',
+            style: TextStyle(color: Colors.white),
+          )
         ]
       );
   }
@@ -334,7 +346,8 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
 
   Widget createFlashButtonRow(){
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         InkWell(
           onTap: () async {
@@ -409,36 +422,81 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
 
 
   Widget createCameraToggleButton(){
-    return InkWell(
-      onTap: () {
-        setState(() {
-          _isCameraInitialized = false;
-        });
-        onNewCameraSelected(
-          cameras[_isRearCameraSelected ? 0 : 1],
-        );
-        setState(() {
-          _isRearCameraSelected = !_isRearCameraSelected;
-        });
-      },
-      child: Stack(
-        alignment: Alignment.center,
+    return
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Icon(
-            Icons.circle,
-            color: Colors.black38,
-            size: 60,
+          MaterialButton(
+            shape: CircleBorder(),
+            child: Icon(
+                  _isRearCameraSelected
+                      ? Icons.camera_front
+                      : Icons.camera_rear,
+                  color: Colors.white,
+                  size: 30,
+                ),
+            onPressed: () {
+                setState(() {
+                  _isCameraInitialized = false;
+                });
+                onNewCameraSelected(
+                  cameras[_isRearCameraSelected ? 0 : 1],
+                );
+                setState(() {
+                  _isRearCameraSelected = !_isRearCameraSelected;
+                });
+            },
           ),
-          Icon(
-            _isRearCameraSelected
-                ? Icons.camera_front
-                : Icons.camera_rear,
-            color: Colors.white,
-            size: 30,
+
+          MaterialButton(
+            child: Icon(Icons.camera_alt,
+                  color: Colors.white,
+                  size: 30,
+                ),
+            onPressed: (){},
           ),
-        ],
-      ),
+
+          MaterialButton(
+            child:
+                Icon(Icons.video_camera_back,
+                      color: Colors.white,
+                      size: 30,
+                  ),
+            onPressed: (){},
+          ),
+      ]
     );
   }
 
+  void _handleScaleStart(ScaleStartDetails details) {
+    _minAvailableZoom = _currentZoomLevel;
+  }
+
+  Future<void> _handleScaleUpdate(ScaleUpdateDetails details) async {
+    // When there are not exactly two fingers on screen don't scale
+    if (controller == null || _pointers != 2) {
+      return;
+    }
+
+    _currentZoomLevel = (_minAvailableZoom * details.scale)
+        .clamp(_minAvailableZoom, _maxAvailableZoom);
+
+    await controller!.setZoomLevel(_currentZoomLevel);
+  }
+
+  void onViewFinderTap(TapDownDetails details, BoxConstraints constraints) {
+    if (controller == null) {
+      return;
+    }
+
+    final CameraController cameraController = controller!;
+
+    final offset = Offset(
+      details.localPosition.dx / constraints.maxWidth,
+      details.localPosition.dy / constraints.maxHeight,
+    );
+    cameraController.setExposurePoint(offset);
+    cameraController.setFocusPoint(offset);
+  }
 }

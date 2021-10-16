@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:family/widgets/CameraExampleHome.dart';
+import 'package:family/widgets/CameraScreen.dart';
+import 'package:family/widgets/ImageSlider.dart';
 import 'package:flutter/material.dart';
 
 
@@ -34,7 +36,8 @@ class PostFormState extends State<PostForm> {
               MaterialPageRoute(builder: (context) =>
                   //TakePictureScreenWidget()
                 //TakePictureServiceWidget()
-                CameraExampleHome()
+                //CameraExampleHome()
+                CameraScreen()
               ),
             );
         },
@@ -68,10 +71,9 @@ class PostFormState extends State<PostForm> {
                 width: MediaQuery.of(context).size.width,
                 //height: 200.0,
                 child: Center(
-                  child: imageFile == null ?
+                  child: //imageFile == null ?
                        Text("No Image is picked")
                       //: ImageSlider().createImageItem(imageFile.path),
-                        : Text("Image picked but check the code here")
                 ),
               ),
             ),
