@@ -1,9 +1,11 @@
 
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
-import 'package:gallery_saver/gallery_saver.dart';
+//import 'package:gallery_saver/gallery_saver.dart';
 
 
 import '../main.dart';
@@ -473,11 +475,13 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                 ),
             onPressed: () async {
               XFile? rawImage = await takePicture();
+              /*
               GallerySaver.saveImage(rawImage!.path, albumName: "Family").
                 then((success) {
                   imageFile = rawImage;
                   showInSnackBar(rawImage.name + "Saved!");
               });
+              */
             },
           ),
 
@@ -565,11 +569,13 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
       if (file != null) {
         //_startVideoPlayer();
 
+        /*
         GallerySaver.saveVideo(file.path, albumName: "Flutter").
         then((success) {
           videoFile = file;
           showInSnackBar(file.name + "Saved!");
         });
+        */
       }
     });
   }
@@ -590,6 +596,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
 
     try {
       await cameraController.startVideoRecording();
+
     } on CameraException catch (e) {
       showInSnackBar(e.description.toString());
       return;
