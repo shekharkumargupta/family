@@ -1,5 +1,10 @@
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:video_player/video_player.dart';
+import 'package:gallery_saver/gallery_saver.dart';
+
 
 import '../main.dart';
 
@@ -12,6 +17,9 @@ class CameraScreen extends StatefulWidget {
 class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver{
 
   CameraController? controller;
+
+
+
   late Future<void> initializeCameraControllerFuture;
   bool _isCameraInitialized = false;
 
@@ -19,19 +27,27 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   ResolutionPreset currentResolutionPreset = ResolutionPreset.high;
 
   double _minAvailableZoom = 1.0;
-  double _maxAvailableZoom = 1.0;
-  double _currentZoomLevel = 1.0;
+  double _maxAvailableZoom = 10.0;
+  double _currentZoomLevel = 5.0;
 
-  double _minAvailableExposureOffset = 0.0;
-  double _maxAvailableExposureOffset = 0.0;
-  double _currentExposureOffset = 0.0;
+  double _minAvailableExposureOffset = 1.0;
+  double _maxAvailableExposureOffset = 10.0;
+  double _currentExposureOffset = 5.0;
 
 
   FlashMode? _currentFlashMode;
   bool _isRearCameraSelected = true;
+  bool _isVideoCameraSelected = false;
+  bool _isRecordingInProgress = false;
 
   // Counting pointers (number of user fingers on screen)
   int _pointers = 0;
+
+  XFile? imageFile;
+  XFile? videoFile;
+
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void initCamera(){
     availableCameras().then((availableCameras)  {
@@ -140,6 +156,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       body: createCameraScreen()
     );
   }
@@ -232,20 +249,20 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
             );
     } else {
           return Listener(
-              onPointerDown: (_) => _currentZoomLevel++,
-              onPointerUp: (_) => _currentZoomLevel--,
-              child: CameraPreview(controller!,
-                      child: LayoutBuilder(
-                              builder: (BuildContext context, BoxConstraints constraints) {
-                                return GestureDetector(
-                                          behavior: HitTestBehavior.opaque,
-                                          onScaleStart: _handleScaleStart,
-                                          onScaleUpdate: _handleScaleUpdate,
-                                          onTapDown: (details) =>
-                                              onViewFinderTap(details, constraints),
-                                        );
-                              }),
-                      ),
+            onPointerDown: (_) => _currentZoomLevel++,
+            onPointerUp: (_) => _currentZoomLevel--,
+            child: CameraPreview(controller!,
+              child: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  return GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onScaleStart: _handleScaleStart,
+                    onScaleUpdate: _handleScaleUpdate,
+                    onTapDown: (details) =>
+                        onViewFinderTap(details, constraints),
+                  );
+                }),
+              ),
           );
     }
   }
@@ -286,7 +303,6 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            createCameraQualityDropDown(),
             Slider(
               value: _currentZoomLevel,
               min: _minAvailableZoom,
@@ -324,7 +340,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                 value: _currentExposureOffset,
                 min: _minAvailableExposureOffset,
                 max: _maxAvailableExposureOffset,
-                activeColor: Colors.white,
+                activeColor: Colors.blue,
                 inactiveColor: Colors.white30,
                 onChanged: (value) async {
                   setState(() {
@@ -416,6 +432,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                 : Colors.white,
           ),
         ),
+        createCameraQualityDropDown(),
       ],
     );
   }
@@ -431,8 +448,8 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
             shape: CircleBorder(),
             child: Icon(
                   _isRearCameraSelected
-                      ? Icons.camera_front
-                      : Icons.camera_rear,
+                      ? Icons.camera_rear
+                      : Icons.camera_front,
                   color: Colors.white,
                   size: 30,
                 ),
@@ -454,16 +471,36 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                   color: Colors.white,
                   size: 30,
                 ),
-            onPressed: (){},
+            onPressed: () async {
+              XFile? rawImage = await takePicture();
+              GallerySaver.saveImage(rawImage!.path, albumName: "Family").
+                then((success) {
+                  imageFile = rawImage;
+                  showInSnackBar(rawImage.name + "Saved!");
+              });
+            },
           ),
 
           MaterialButton(
-            child:
-                Icon(Icons.video_camera_back,
-                      color: Colors.white,
-                      size: 30,
+            child: controller!.value.isRecordingVideo
+            //child: true
+                ?
+                  Icon(Icons.pause_circle_filled,
+                    color: Colors.red,
+                    size: 30,
+                  )
+                :
+                  Icon(Icons.video_camera_back,
+                    color: Colors.white,
+                    size: 30,
                   ),
-            onPressed: (){},
+            onPressed: (){
+              if(controller!.value.isRecordingVideo){
+                onStopButtonPressed();
+              }else{
+                startVideoRecording();
+              }
+            },
           ),
       ]
     );
@@ -498,5 +535,113 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     );
     cameraController.setExposurePoint(offset);
     cameraController.setFocusPoint(offset);
+  }
+
+
+  Future<XFile?> takePicture() async{
+    final CameraController? cameraController = controller;
+    if(cameraController!.value.isTakingPicture){
+      return null;
+    }
+
+    try{
+      XFile xFile = await cameraController.takePicture();
+      return xFile;
+    } on CameraException catch(e){
+      print('Error occured whilte taking picture: $e');
+      return null;
+    }
+  }
+
+  void onVideoRecordButtonPressed() {
+    startVideoRecording().then((_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  void onStopButtonPressed() {
+    stopVideoRecording().then((file) {
+      if (mounted) setState(() {});
+      if (file != null) {
+        //_startVideoPlayer();
+
+        GallerySaver.saveVideo(file.path, albumName: "Flutter").
+        then((success) {
+          videoFile = file;
+          showInSnackBar(file.name + "Saved!");
+        });
+      }
+    });
+  }
+
+
+  Future<void> startVideoRecording() async {
+    final CameraController? cameraController = controller;
+
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      showInSnackBar('Error: select a camera first.');
+      return;
+    }
+
+    if (cameraController.value.isRecordingVideo) {
+      // A recording is already started, do nothing.
+      return;
+    }
+
+    try {
+      await cameraController.startVideoRecording();
+    } on CameraException catch (e) {
+      showInSnackBar(e.description.toString());
+      return;
+    }
+  }
+
+  Future<XFile?> stopVideoRecording() async {
+    final CameraController? cameraController = controller;
+
+    if (cameraController == null || !cameraController.value.isRecordingVideo) {
+      return null;
+    }
+
+    try {
+      return cameraController.stopVideoRecording();
+    } on CameraException catch (e) {
+      showInSnackBar(e.description.toString());
+      return null;
+    }
+  }
+
+  Future<void> pauseVideoRecording() async {
+    final CameraController? cameraController = controller;
+
+    if (cameraController == null || !cameraController.value.isRecordingVideo) {
+      return null;
+    }
+
+    try {
+      await cameraController.pauseVideoRecording();
+    } on CameraException catch (e) {
+      showInSnackBar(e.description.toString());
+      rethrow;
+    }
+  }
+
+  Future<void> resumeVideoRecording() async {
+    final CameraController? cameraController = controller;
+
+    if (cameraController == null || !cameraController.value.isRecordingVideo) {
+      return null;
+    }
+
+    try {
+      await cameraController.resumeVideoRecording();
+    } on CameraException catch (e) {
+      showInSnackBar(e.description.toString());
+      rethrow;
+    }
+  }
+
+  void showInSnackBar(String message) {
+    _scaffoldKey.currentState?.showSnackBar(SnackBar(content: Text(message)));
   }
 }
