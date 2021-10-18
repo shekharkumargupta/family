@@ -54,6 +54,7 @@ class _CameraScreenState extends State<CameraScreen>
         print("No camera available");
       }
     });
+
   }
 
   @override
@@ -437,24 +438,16 @@ class _CameraScreenState extends State<CameraScreen>
                   color: Colors.white,
                   size: 60,
                 ),
-                onPressed: () async {
-                  XFile? rawImage = await takePicture();
-                  /*
-                      GallerySaver.saveImage(rawImage!.path, albumName: "Family").
-                        then((success) {
-                          imageFile = rawImage;
-                          showInSnackBar(rawImage.name + "Saved!");
-                      });
-                    */
+                onPressed: () {
+                  takePicture();
                 },
               ),
               MaterialButton(
-                child: controller!.value.isTakingPicture
+                child: imageFile != null
                     //child: true
-                    ? Icon(
-                        Icons.image,
-                        color: Colors.red,
-                        size: 30,
+                    ? CircleAvatar(
+                        backgroundImage: FileImage(File(imageFile!.path)),
+                        radius: 30,
                       )
                     : Icon(
                         Icons.image,
@@ -620,6 +613,20 @@ class _CameraScreenState extends State<CameraScreen>
 
     try {
       XFile xFile = await cameraController.takePicture();
+
+      if (xFile == null) {
+        return Future.value(null);
+      }
+
+      final directory = await getApplicationDocumentsDirectory();
+      String path = directory.path;
+      String fileToBeSaved = '$path/' + DateTime.now().toString() + '.png';
+      xFile.saveTo(fileToBeSaved);
+
+      setState(() {
+        imageFile = xFile;
+      });
+
       return xFile;
     } on CameraException catch (e) {
       print('Error occured whilte taking picture: $e');
@@ -634,18 +641,11 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   void onStopButtonPressed() {
-    stopVideoRecording().then((file) {
+    stopVideoRecording().then((videoFile) {
       if (mounted) setState(() {});
-      if (file != null) {
+      if (videoFile != null) {
         //_startVideoPlayer();
 
-        /*
-        GallerySaver.saveVideo(file.path, albumName: "Flutter").
-        then((success) {
-          videoFile = file;
-          showInSnackBar(file.name + "Saved!");
-        });
-        */
       }
     });
   }
@@ -679,9 +679,24 @@ class _CameraScreenState extends State<CameraScreen>
     }
 
     try {
-      return cameraController.stopVideoRecording();
+      XFile xFile = await cameraController.stopVideoRecording();
+
+      if (xFile == null) {
+        return Future.value(null);
+      }
+
+      final directory = await getApplicationDocumentsDirectory();
+      String path = directory.path;
+      String fileToBeSaved = '$path/' + DateTime.now().toString() + '.mp4';
+      xFile.saveTo(fileToBeSaved);
+
+      setState(() {
+        videoFile = xFile;
+      });
+
+      return xFile;
     } on CameraException catch (e) {
-      showInSnackBar(e.description.toString());
+      print('Error occured whilte taking picture: $e');
       return null;
     }
   }
