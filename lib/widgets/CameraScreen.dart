@@ -219,13 +219,14 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                         Positioned(
                             bottom: 0,
                             child: Container(
-                              padding: EdgeInsets.all(15.0),
+                              padding: EdgeInsets.all(0.0),
                               width: MediaQuery.of(context).size.width,
                               height: 120,
                               //color: Colors.deepPurple,
                               child: Column(
                                 children: [
-                                  createCameraToggleButton()
+                                  createCameraToggleButton(),
+                                  createCameraBottomBar()
                                 ],
                               )
                             )
@@ -447,71 +448,134 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
 
   Widget createCameraToggleButton(){
     return
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          MaterialButton(
-            shape: CircleBorder(),
-            child: Icon(
-                  _isRearCameraSelected
-                      ? Icons.camera_rear
-                      : Icons.camera_front,
-                  color: Colors.white,
-                  size: 30,
-                ),
-            onPressed: () {
-                setState(() {
-                  _isCameraInitialized = false;
-                });
-                onNewCameraSelected(
-                  cameras[_isRearCameraSelected ? 0 : 1],
-                );
-                setState(() {
-                  _isRearCameraSelected = !_isRearCameraSelected;
-                });
-            },
-          ),
+      Container(
+        color: Colors.black12,
+        padding: EdgeInsets.all(8.0),
+        child:
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              MaterialButton(
+                shape: CircleBorder(),
+                child: Icon(
+                      _isRearCameraSelected
+                          ? Icons.camera_rear
+                          : Icons.camera_front,
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                onPressed: () {
+                    setState(() {
+                      _isCameraInitialized = false;
+                    });
+                    onNewCameraSelected(
+                      cameras[_isRearCameraSelected ? 0 : 1],
+                    );
+                    setState(() {
+                      _isRearCameraSelected = !_isRearCameraSelected;
+                    });
+                },
+              ),
+              MaterialButton(
+                child: Icon(
+                    Icons.circle,
+                    color: Colors.white,
+                    size: 50,
+                  ),
+                  onPressed: () async {
+                    XFile? rawImage = await takePicture();
+                    /*
+                      GallerySaver.saveImage(rawImage!.path, albumName: "Family").
+                        then((success) {
+                          imageFile = rawImage;
+                          showInSnackBar(rawImage.name + "Saved!");
+                      });
+                    */
+                },
+              ),
 
-          MaterialButton(
-            child: Icon(Icons.camera_alt,
-                  color: Colors.white,
-                  size: 30,
-                ),
-            onPressed: () async {
-              XFile? rawImage = await takePicture();
-              /*
-              GallerySaver.saveImage(rawImage!.path, albumName: "Family").
-                then((success) {
-                  imageFile = rawImage;
-                  showInSnackBar(rawImage.name + "Saved!");
-              });
-              */
-            },
-          ),
+              MaterialButton(
+                child: controller!.value.isRecordingVideo
+                //child: true
+                    ?
+                      Icon(Icons.pause_circle_filled,
+                        color: Colors.red,
+                        size: 30,
+                      )
+                    :
+                      Icon(Icons.video_camera_back,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                onPressed: (){
+                  if(controller!.value.isRecordingVideo){
+                    onStopButtonPressed();
+                  }else{
+                    startVideoRecording();
+                  }
+                },
+              )
+          ]
+        )
+    );
+  }
 
-          MaterialButton(
-            child: controller!.value.isRecordingVideo
-            //child: true
+  Widget createCameraBottomBar(){
+    return
+      Container(
+        color: Colors.black38,
+        padding: EdgeInsets.all(12.0),
+        child:
+          Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+              MaterialButton(
+              child: controller!.value.isTakingPicture
+              ?
+              Icon(Icons.camera_alt,
+                color: Colors.grey,
+                size: 30,
+              )
+              :
+              Icon(Icons.camera_alt,
+                color: Colors.white,
+                size: 30,
+              ),
+              onPressed: () async{
+                  if(controller!.value.isTakingPicture){
+                    //onStopButtonPressed();
+                  }
+                  else{
+                  //startVideoRecording();
+                  }
+                }
+              ),
+
+              MaterialButton(
+                child: controller!.value.isRecordingVideo
+                //child: true
                 ?
-                  Icon(Icons.pause_circle_filled,
-                    color: Colors.red,
+                  Icon(Icons.video_camera_back,
+                    color: Colors.grey,
                     size: 30,
                   )
-                :
+                  :
                   Icon(Icons.video_camera_back,
                     color: Colors.white,
                     size: 30,
                   ),
-            onPressed: (){
-              if(controller!.value.isRecordingVideo){
-                onStopButtonPressed();
-              }else{
-                startVideoRecording();
-              }
-            },
-          ),
-      ]
+                onPressed: (){
+                    if(controller!.value.isRecordingVideo){
+                      //onStopButtonPressed();
+                    }else{
+                      //startVideoRecording();
+                    }
+                },
+              ),
+          ]
+        )
     );
   }
 
