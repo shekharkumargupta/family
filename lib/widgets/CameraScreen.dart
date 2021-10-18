@@ -1,5 +1,6 @@
 
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -106,28 +107,29 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
     try {
       await cameraController.initialize();
 
-      await Future.wait([
-        cameraController
-            .getMinExposureOffset()
-            .then((value) => _minAvailableExposureOffset = value),
-        cameraController
-            .getMaxExposureOffset()
-            .then((value) => _maxAvailableExposureOffset = value),
-        cameraController
-            .getMaxZoomLevel()
-            .then((value) => _maxAvailableZoom = value),
-        cameraController
-            .getMinZoomLevel()
-            .then((value) => _minAvailableZoom = value),
+      if(!kIsWeb) {
+        await Future.wait([
+          cameraController
+              .getMinExposureOffset()
+              .then((value) => _minAvailableExposureOffset = value),
+          cameraController
+              .getMaxExposureOffset()
+              .then((value) => _maxAvailableExposureOffset = value),
+          cameraController
+              .getMaxZoomLevel()
+              .then((value) => _maxAvailableZoom = value),
+          cameraController
+              .getMinZoomLevel()
+              .then((value) => _minAvailableZoom = value),
 
-        //initializeCameraControllerFuture = cameraController.initialize(),
-      ]);
-      _currentFlashMode = controller!.value.flashMode;
+          //initializeCameraControllerFuture = cameraController.initialize(),
+        ]);
+        _currentFlashMode = controller!.value.flashMode;
+    }
 
     } on CameraException catch (e) {
         print('Error initializing camera: $e');
     }
-
     // Update the boolean
     if (mounted) {
       setState(() {
@@ -180,7 +182,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                         Container(
                           width: MediaQuery.of(context).size.width,
                           height: MediaQuery.of(context).size.height - 200,
-                          //color: Colors.red,
+                          color: Colors.red,
                           child: createCameraPreview()
                         ),
 
@@ -188,17 +190,22 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                         Positioned(
                           top: 0,
                           child: Container(
+                            padding: EdgeInsets.all(15.0),
                             width: MediaQuery.of(context).size.width,
-                            height: 50,
+                            height: 150,
                             //color: Colors.deepPurple,
-                            child: createFlashButtonRow(),
+                            child: Column(
+                              children: [
+                                createFlashButtonRow(),
+                                createCameraZoomSlider(),
+                              ]
+                            )
                           )
                         ),
 
-
                         //This container is for Camera Exposure Slider
                         Positioned(
-                            left: 0,
+                            right: 0,
                             top: 50,
                             child: Container(
                               width: 50,
@@ -207,7 +214,6 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                               child: createCameraExposureSlider(),
                             )
                         ),
-
 
                         //This container is for Camera Zoom Slider
                         Positioned(
@@ -219,8 +225,7 @@ class _CameraScreenState extends State<CameraScreen> with WidgetsBindingObserver
                               //color: Colors.deepPurple,
                               child: Column(
                                 children: [
-                                  createCameraToggleButton(),
-                                  createCameraZoomSlider()
+                                  createCameraToggleButton()
                                 ],
                               )
                             )
