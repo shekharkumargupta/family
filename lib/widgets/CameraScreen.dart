@@ -7,6 +7,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 //import 'package:gallery_saver/gallery_saver.dart';
 
+import 'package:family/util/ApplicationStorageUtil.dart';
+
 import '../main.dart';
 
 class CameraScreen extends StatefulWidget {
@@ -16,6 +18,7 @@ class CameraScreen extends StatefulWidget {
 
 class _CameraScreenState extends State<CameraScreen>
     with WidgetsBindingObserver {
+  ApplicationStorageUtil applicationStorageUtil = ApplicationStorageUtil();
   CameraController? controller;
 
   late Future<void> initializeCameraControllerFuture;
@@ -40,8 +43,8 @@ class _CameraScreenState extends State<CameraScreen>
   // Counting pointers (number of user fingers on screen)
   int _pointers = 0;
 
-  XFile? imageFile;
-  XFile? videoFile;
+  File? imageFile;
+  File? videoFile;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -453,7 +456,9 @@ class _CameraScreenState extends State<CameraScreen>
                         color: Colors.white,
                         size: 30,
                       ),
-                onPressed: () {},
+                onPressed: () {
+
+                },
               )
             ]));
   }
@@ -604,18 +609,7 @@ class _CameraScreenState extends State<CameraScreen>
     cameraController.setFocusPoint(offset);
   }
 
-  String getFileNameFromTime() {
-    DateTime now = DateTime.now();
-    String fileName = now.year.toString() +
-        now.month.toString() +
-        now.day.toString() +
-        now.hour.toString() +
-        now.minute.toString() +
-        now.second.toString();
-    return fileName;
-  }
-
-  Future<XFile?> takePicture() async {
+  Future<File?> takePicture() async {
     final CameraController? cameraController = controller;
     if (cameraController!.value.isTakingPicture) {
       return null;
@@ -623,34 +617,24 @@ class _CameraScreenState extends State<CameraScreen>
 
     try {
       XFile xFile = await cameraController.takePicture();
-
+      File savedFile;
       if (kIsWeb) {
-        String fileToBeSaved = 'c:\\Family\\' + getFileNameFromTime() + '.png';
-        print("fileToBeSaved: " + fileToBeSaved);
+        String fileToBeSaved =
+            'c:\\Family\\' + applicationStorageUtil.getFileNameFromTime("png");
+        showInSnackBar("fileToBeSaved: " + fileToBeSaved);
         xFile.saveTo(fileToBeSaved);
       } else {
-        final directory = await getExternalStorageDirectories()
-            .then((directories) => directories!.forEach((directory) {
-                  if (directory.toString().toUpperCase() == 'DCIM') {
-                    String fileToBeSaved =
-                        directory.path + "" + getFileNameFromTime() + ".png";
-                    print("fileToBeSaved: " + fileToBeSaved);
-                    showInSnackBar(fileToBeSaved);
-                    xFile.saveTo(fileToBeSaved);
-                  }
-                }));
+        savedFile = await applicationStorageUtil.saveFile(xFile, "png");
 
+        setState(() {
+          imageFile = savedFile;
+          showInSnackBar("File saved: " + savedFile.path);
+        });
       }
-
-      setState(() {
-        imageFile = xFile;
-      });
-
-      return xFile;
     } on CameraException catch (e) {
-        print('Error occured whilte taking picture: $e');
-        showInSnackBar(e.description.toString());
-        return null;
+      print('Error occured whilte taking picture: $e');
+      showInSnackBar(e.description.toString());
+      return null;
     }
   }
 
@@ -691,7 +675,7 @@ class _CameraScreenState extends State<CameraScreen>
     }
   }
 
-  Future<XFile?> stopVideoRecording() async {
+  Future<File?> stopVideoRecording() async {
     final CameraController? cameraController = controller;
 
     if (cameraController == null || !cameraController.value.isRecordingVideo) {
@@ -699,29 +683,25 @@ class _CameraScreenState extends State<CameraScreen>
     }
 
     try {
-      XFile xFile = await cameraController.takePicture();
+      XFile xFile = await cameraController.stopVideoRecording();
+      Future<File>? savedFile;
       if (kIsWeb) {
-        String fileToBeSaved = 'c:\\Family\\' + getFileNameFromTime() + '.mp4';
-        print("fileToBeSaved: " + fileToBeSaved);
+        String fileToBeSaved =
+            'c:\\Family\\' + applicationStorageUtil.getFileNameFromTime("mp4");
+        showInSnackBar("fileToBeSaved: " + fileToBeSaved);
         xFile.saveTo(fileToBeSaved);
       } else {
-        final directory = await getExternalStorageDirectories()
-            .then((directories) => directories!.forEach((directory) {
-                  if (directory.toString().toUpperCase() == 'DCIM') {
-                    String fileToBeSaved =
-                        directory.path + "" + getFileNameFromTime() + ".mp4";
-                    print("fileToBeSaved: " + fileToBeSaved);
-                    showInSnackBar(fileToBeSaved);
-                    xFile.saveTo(fileToBeSaved);
-                  }
-                }));
+        savedFile = applicationStorageUtil.saveFile(xFile, "mp4");
+        savedFile.then((file) => {
+              setState(() {
+                imageFile = file;
+                showInSnackBar("File saved: " + file.path);
+              })
+            });
       }
 
-      setState(() {
-        imageFile = xFile;
-      });
+      return await savedFile;
 
-      return xFile;
     } on CameraException catch (e) {
       print('Error occured whilte taking picture: $e');
       showInSnackBar(e.description.toString());
