@@ -16,9 +16,6 @@ class ImageWidget {
       final load = image.resolve(const ImageConfiguration());
 
       final listener = new ImageStreamListener((ImageInfo info, isSync) async {
-        print(info.image.width);
-        print(info.image.height);
-
         if (info.image.width == 80 && info.image.height == 160) {
           completer.complete(Container(child: Text('AZAZA')));
         } else {

@@ -8,6 +8,7 @@ import 'package:video_player/video_player.dart';
 //import 'package:gallery_saver/gallery_saver.dart';
 
 import 'package:family/util/ApplicationStorageUtil.dart';
+import 'ImageFullScreenWidget.dart';
 
 import '../main.dart';
 
@@ -43,8 +44,6 @@ class _CameraScreenState extends State<CameraScreen>
   // Counting pointers (number of user fingers on screen)
   int _pointers = 0;
 
-  File? imageFile;
-  File? videoFile;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -161,9 +160,11 @@ class _CameraScreenState extends State<CameraScreen>
                 //body:true
                 ? Center(
                     child: Container(
-                        height: MediaQuery.of(context).size.height,
-                        width: MediaQuery.of(context).size.width,
-                        child: Stack(fit: StackFit.expand, children: [
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
                           //This container is for Camera Preview
                           Container(
                               //width: MediaQuery.of(context).size.width,
@@ -442,6 +443,7 @@ class _CameraScreenState extends State<CameraScreen>
                 ),
                 onPressed: () {
                   takePicture();
+                  Navigator.pop(context);
                 },
               ),
               MaterialButton(
@@ -457,6 +459,11 @@ class _CameraScreenState extends State<CameraScreen>
                         size: 30,
                       ),
                 onPressed: () {
+                  Navigator.push(context,
+                    MaterialPageRoute(builder: (context) =>
+                        ImageFullScreenWidget(imageFile!.path)
+                    ),
+                  );
 
                 },
               )
