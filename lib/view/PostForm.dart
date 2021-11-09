@@ -136,20 +136,21 @@ class PostFormState extends State<PostForm> {
                   Icons.send,
                 ),
                 onPressed: () {
-                  String postText = textEditingController.text;
-                  Post post = Post('Shekhar Kumar', postText, 0, 0);
-                  Media media = Media('MEDIA', imageFile!.path);
-                  post.setMedias(List.of({media}));
 
-                  setState(){
+                  setState((){
+                    String postText = textEditingController.text;
+                    Post post = Post('Shekhar Kumar', postText, 0, 0);
+                    Media media = Media('MEDIA', imageFile!.path);
+                    post.setMedias(List.of({media}));
                     PostService.addPost(post);
-                    showInSnackBar("Total Item $PostService.findAll().length");
-                  }
+                    print(PostService.findAll().length);
+                  });
 
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => PostList()),
                   );
+
                 },
               )
             ]));
