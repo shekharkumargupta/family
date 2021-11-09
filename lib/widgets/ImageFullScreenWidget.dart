@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'package:family/main.dart';
 
 class ImageFullScreenWidget extends StatelessWidget{
-
-  String imageUrl = '';
-
-  ImageFullScreenWidget(String imageUrl){
-    this.imageUrl = imageUrl;
-  }
 
 
   @override
@@ -20,7 +15,7 @@ class ImageFullScreenWidget extends StatelessWidget{
           child: Hero(
             tag: 'None',
             child: Image.network(
-              imageUrl,
+              imageFile!.path,
             ),
           ),
         ),

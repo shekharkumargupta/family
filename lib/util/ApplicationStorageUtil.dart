@@ -36,6 +36,13 @@ class ApplicationStorageUtil {
     return file.copy(fileName);
   }
 
+  Future<String> getFilePathToBeSaved(XFile xFile, String fileType) async {
+    String applicationDirectoryName = await createDirectory(APPLICATION_DIRECTORY_NAME);
+    String fileName = applicationDirectoryName + getFileNameFromTime(fileType);
+
+    return Future.value(fileName);
+  }
+
 
   String getFileNameFromTime(String fileType) {
     DateTime now = DateTime.now();

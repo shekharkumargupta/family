@@ -7,36 +7,11 @@ import 'package:flutter/material.dart';
 
 class MainTab extends StatefulWidget {
 
-  /*
-  List<CameraDescription> cameras;
-  CameraDescription firstCamera;
-
-  MainTab(List<CameraDescription> cameras, CameraDescription firstCamera){
-    this.cameras = cameras;
-    this.firstCamera = firstCamera;
-  }
-  */
-
   @override
   State<StatefulWidget> createState() {
     return MainTabState();
   }
 }
-
-/*
-class MainTabState extends State<MainTab>{
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      //home: TakePictureScreenWidget(cameras: widget.cameras),
-      home: TakePictureServiceWidget(widget.firstCamera)
-    );
-  }
-
-}
-*/
-
 
 
 class MainTabState extends State<MainTab> {

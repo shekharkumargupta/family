@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:family/view/PostForm.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:camera/camera.dart';
@@ -150,10 +151,10 @@ class _CameraScreenState extends State<CameraScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(key: _scaffoldKey, body: createCameraScreen());
+    return Scaffold(key: _scaffoldKey, body: createCameraScreen(context));
   }
 
-  Widget createCameraScreen() {
+  Widget createCameraScreen(BuildContext context) {
     return SafeArea(
         child: Scaffold(
             body: _isCameraInitialized
@@ -209,7 +210,7 @@ class _CameraScreenState extends State<CameraScreen>
                                     children: [
                                       _isVideoCameraSelected
                                           ? createVideoToggleButton()
-                                          : createCameraToggleButton(),
+                                          : createCameraToggleButton(context),
                                       createCameraBottomBar()
                                     ],
                                   )))
@@ -406,7 +407,7 @@ class _CameraScreenState extends State<CameraScreen>
     );
   }
 
-  Widget createCameraToggleButton() {
+  Widget createCameraToggleButton(BuildContext context) {
     return Container(
         color: Colors.black12,
         padding: EdgeInsets.all(12.0),
@@ -442,8 +443,13 @@ class _CameraScreenState extends State<CameraScreen>
                   size: 60,
                 ),
                 onPressed: () {
-                  takePicture();
-                  Navigator.pop(context);
+                  takePicture().then((file) => {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) =>
+                            PostForm()
+                          ),
+                        )
+                      });
                 },
               ),
               MaterialButton(
@@ -459,12 +465,9 @@ class _CameraScreenState extends State<CameraScreen>
                         size: 30,
                       ),
                 onPressed: () {
-                  Navigator.push(context,
-                    MaterialPageRoute(builder: (context) =>
-                        ImageFullScreenWidget(imageFile!.path)
-                    ),
+                  Image.file(imageFile!,
+                    fit: BoxFit.fill,
                   );
-
                 },
               )
             ]));
@@ -630,18 +633,23 @@ class _CameraScreenState extends State<CameraScreen>
             'c:\\Family\\' + applicationStorageUtil.getFileNameFromTime("png");
         showInSnackBar("fileToBeSaved: " + fileToBeSaved);
         xFile.saveTo(fileToBeSaved);
+
+        setState(() {
+          imageFile = File(xFile.path);
+          showInSnackBar("File saved: " + imageFile!.path);
+        });
       } else {
         savedFile = await applicationStorageUtil.saveFile(xFile, "png");
 
         setState(() {
-          imageFile = savedFile;
-          showInSnackBar("File saved: " + savedFile.path);
+          imageFile = File(savedFile.path);
+          showInSnackBar("File saved: " + imageFile!.path);
         });
       }
     } on CameraException catch (e) {
-      print('Error occured whilte taking picture: $e');
-      showInSnackBar(e.description.toString());
-      return null;
+          print('Error occured whilte taking picture: $e');
+          showInSnackBar(e.description.toString());
+          return null;
     }
   }
 

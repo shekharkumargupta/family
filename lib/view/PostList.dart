@@ -16,7 +16,7 @@ class PostList extends StatefulWidget{
 
 class PostState extends State<PostList> {
 
-  List<Post> posts = PostService().findAll();
+  List<Post> posts = PostService.findAll();
 
   @override
   Widget build(BuildContext klcontext) {
