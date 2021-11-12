@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:family/model/Post.dart';
 import 'package:family/service/PostService.dart';
 
+import 'package:family/main.dart';
+
 class PostItemBottomBar extends StatefulWidget {
 
   final Post post;
@@ -44,7 +46,7 @@ class PostItemBottomBarState extends State<PostItemBottomBar> {
                 //textColor: const Color(0xFF6200EE),
                 onPressed: () {
                   setState(() {
-                    PostService.increaseLike(post);
+                    postService.increaseLike(post);
                     print(post.likesCount);
                   });
                 },

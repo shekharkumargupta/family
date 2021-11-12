@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:family/main.dart';
 
+import 'MainTab.dart';
 import 'PostList.dart';
 
 class PostForm extends StatefulWidget {
@@ -137,18 +138,18 @@ class PostFormState extends State<PostForm> {
                 ),
                 onPressed: () {
 
-                  setState((){
+
                     String postText = textEditingController.text;
                     Post post = Post('Shekhar Kumar', postText, 0, 0);
                     Media media = Media('MEDIA', imageFile!.path);
-                    post.setMedias(List.of({media}));
-                    PostService.addPost(post);
-                    print(PostService.findAll().length);
-                  });
+                    post.setMedias([media]);
+                    postService.addPost(post);
+                    //print(PostService.findAll().length);
+
 
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => PostList()),
+                    MaterialPageRoute(builder: (context) => MainTab()),
                   );
 
                 },

@@ -1,3 +1,4 @@
+import 'package:family/model/Media.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -44,12 +45,17 @@ class PostListItem extends StatelessWidget{
             padding: const EdgeInsets.all(10.0),
             child: Text(
               post.text,
-              style: TextStyle(color: Colors.black.withOpacity(0.6)),
+              textAlign: TextAlign.left
             ),
           ),
 
 
-          ImageSlider().createImageSlider(post.medias),
+          post.medias != null
+          ?
+            ImageSlider().createImageSlider(post.medias)
+          :
+            ImageSlider().createImageSlider([Media("IMAGE", "https://picsum.photos/900/800")])
+          ,
 
           PostItemBottomBar(post),
         ],

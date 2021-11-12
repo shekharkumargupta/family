@@ -5,21 +5,25 @@ import 'package:family/view/PostListItem.dart';
 import 'package:flutter/material.dart';
 
 import 'PostForm.dart';
+import 'package:family/main.dart';
 
 class PostList extends StatefulWidget{
 
   @override
   State<StatefulWidget> createState() {
+
+      postService.loadSamplePost();
       return PostState();
   }
 }
 
 class PostState extends State<PostList> {
 
-  List<Post> posts = PostService.findAll();
+  List<Post> posts = postService.findAll();
 
   @override
   Widget build(BuildContext klcontext) {
+
     return  Scaffold(
         body: postList(),
         floatingActionButton: FloatingActionButton(

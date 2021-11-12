@@ -4,12 +4,15 @@ import 'package:camera/camera.dart';
 import 'package:family/view/MainTab.dart';
 import 'package:family/widgets/CameraScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:family/service/PostService.dart';
 
 List<CameraDescription> cameras = [];
 late CameraDescription firstCamera;
 
 File? imageFile;
 File? videoFile;
+
+PostService postService = PostService();
 
 Future<void> main() async {
   runApp(MyApp());

@@ -4,7 +4,7 @@ import 'package:family/model/Post.dart';
 class PostService {
 
 
-  static List<Post> postList = List.of({});
+  List<Post> postList = List.of({});
 
   static List<Media> mediaList = List.of({
     Media("IMAGE", "https://picsum.photos/900/600"),
@@ -13,9 +13,9 @@ class PostService {
   });
 
 
-  static List<Post> getPostList() {
+  void loadSamplePost() {
 
-    /*
+
     Post shekharPost = Post("Shekhar Kumar",
         "Mohandas Karamchand Gandhi was an Indian lawyer, anti-colonial nationalist, and political ethicist who employed nonviolent resistance to lead the successful campaign for India's independence from British rule and in turn inspired movements for civil rights and freedom across the world.",
         10,
@@ -39,25 +39,19 @@ class PostService {
     samriddhiPost.setMedias(mediaList);
 
     postList.addAll({shekharPost, anjaliPost, samriddhiPost});
-    */
+  }
 
+  List<Post> findAll(){
     return postList;
   }
 
-  static List<Post> findAll(){
-    return getPostList();
-  }
 
 
-
-  static void increaseLike(Post post){
+  void increaseLike(Post post){
     post.likesCount = post.likesCount + 1;
   }
 
-  static void addPost(Post post){
-    if(post.medias == null) {
-      post.setMedias(mediaList);
-    }
-    getPostList().add(post);
+  void addPost(Post post){
+    postList.add(post);
   }
 }
