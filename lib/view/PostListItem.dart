@@ -52,9 +52,9 @@ class PostListItem extends StatelessWidget{
 
           post.medias != null
           ?
-            ImageSlider().createImageSlider(post.medias)
+            ImageSlider(post.medias)
           :
-            ImageSlider().createImageSlider([Media("IMAGE", "https://picsum.photos/900/800")])
+            ImageSlider([Media("IMAGE", "https://picsum.photos/900/800")])
           ,
 
           PostItemBottomBar(post),

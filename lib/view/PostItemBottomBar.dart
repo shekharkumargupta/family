@@ -46,7 +46,7 @@ class PostItemBottomBarState extends State<PostItemBottomBar> {
                 //textColor: const Color(0xFF6200EE),
                 onPressed: () {
                   setState(() {
-                    postService.increaseLike(post);
+                    PostService.increaseLike(post);
                     print(post.likesCount);
                   });
                 },

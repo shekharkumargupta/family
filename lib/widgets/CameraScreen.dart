@@ -630,7 +630,7 @@ class _CameraScreenState extends State<CameraScreen>
       File savedFile;
       if (kIsWeb) {
         String fileToBeSaved =
-            'c:\\Family\\' + applicationStorageUtil.getFileNameFromTime("png");
+            'c:\\Family\\' + applicationStorageUtil.getFileNameFromTime("jpeg");
         showInSnackBar("fileToBeSaved: " + fileToBeSaved);
         xFile.saveTo(fileToBeSaved);
 
@@ -639,7 +639,7 @@ class _CameraScreenState extends State<CameraScreen>
           showInSnackBar("File saved: " + imageFile!.path);
         });
       } else {
-        savedFile = await applicationStorageUtil.saveFile(xFile, "png");
+        savedFile = await applicationStorageUtil.saveFile(xFile, "jpeg");
 
         setState(() {
           imageFile = File(savedFile.path);

@@ -1,18 +1,19 @@
 import 'dart:io';
 
+import 'package:family/main.dart';
 import 'package:family/model/Media.dart';
 import 'package:family/model/Post.dart';
 import 'package:family/service/PostService.dart';
 import 'package:family/widgets/CameraScreen.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-
-import 'package:family/main.dart';
+import 'package:flutter/material.dart';
 
 import 'MainTab.dart';
-import 'PostList.dart';
 
 class PostForm extends StatefulWidget {
+
+
+
   @override
   State<StatefulWidget> createState() {
     return PostFormState();
@@ -143,7 +144,7 @@ class PostFormState extends State<PostForm> {
                     Post post = Post('Shekhar Kumar', postText, 0, 0);
                     Media media = Media('MEDIA', imageFile!.path);
                     post.setMedias([media]);
-                    postService.addPost(post);
+                    PostService.addPost(post);
                     //print(PostService.findAll().length);
 
 

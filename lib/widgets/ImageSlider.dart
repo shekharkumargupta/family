@@ -1,3 +1,4 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:loading_animations/loading_animations.dart';
@@ -6,9 +7,26 @@ import 'package:loading_animations/loading_animations.dart';
 import 'package:family/model/Media.dart';
 import 'package:family/widgets/ImageWidget.dart';
 
-class ImageSlider {
+class ImageSlider extends StatefulWidget {
 
-  ImageSlider();
+
+  List<Media> medias;
+  ImageSlider(this.medias);
+
+  @override
+  State<StatefulWidget> createState() {
+    return ImageSliderState();
+  }
+}
+
+class ImageSliderState extends State<ImageSlider>{
+
+  final FirebaseStorage storage = FirebaseStorage.instance;
+
+  @override
+  Widget build(BuildContext context) {
+    return createImageSlider(widget.medias);
+  }
 
   createImageSlider(List<Media> medias){
     return CarouselSlider(
@@ -34,8 +52,28 @@ class ImageSlider {
     return widgetList;
   }
 
-   createImageItem(String imageUrl){
-    return Container(
+   createImageItem(String imageUrl) {
+     var reference = storage
+         .ref()
+         .child("WIN_20190818_18_12_04_Pro.jpg");
+
+     String url = "https://picsum.photos/900/800";
+     reference.getDownloadURL()
+         .then((value) => {
+
+         setState(() {
+           url = value;
+           print("Firebase Image Url: " + url);
+         })
+     });
+
+     Widget  widget = createItem(url);
+
+     return widget;
+  }
+
+  Widget createItem(String imageUrl){
+    return  Container(
       alignment: Alignment.center,
       decoration: BoxDecoration(color: Colors.white),
       child: FutureBuilder<Widget>(
@@ -53,5 +91,6 @@ class ImageSlider {
       ),
     );
   }
+
 
 }
