@@ -46,41 +46,25 @@ class ImageSliderState extends State<ImageSlider>{
 
   createImageSliderItems(List<Media> medias){
     List<Widget> widgetList = [];
+
     medias.forEach((media) {
-      widgetList.add(createImageItem(media.url));
+      widgetList.add(createItem(media.url));
     });
+
     return widgetList;
   }
 
-   createImageItem(String imageUrl) {
-     var reference = storage
-         .ref()
-         .child("WIN_20190818_18_12_04_Pro.jpg");
-
-     String url = "https://picsum.photos/900/800";
-     reference.getDownloadURL()
-         .then((value) => {
-
-         setState(() {
-           url = value;
-           print("Firebase Image Url: " + url);
-         })
-     });
-
-     Widget  widget = createItem(url);
-
-     return widget;
-  }
 
   Widget createItem(String imageUrl){
+    print("Firebase Image Url: " + imageUrl);
     return  Container(
       alignment: Alignment.center,
       decoration: BoxDecoration(color: Colors.white),
-      child: FutureBuilder<Widget>(
-        future: ImageWidget().createImageWidget(imageUrl),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return Image.network(imageUrl);
+      child: FutureBuilder<String>(
+        future: loadImage(),
+        builder: (BuildContext context, AsyncSnapshot<String> image) {
+          if (image.hasData) {
+            return Image.network(image.data.toString());
           } else {
             return  LoadingRotating.square(
               size: 40,
@@ -90,6 +74,16 @@ class ImageSliderState extends State<ImageSlider>{
         },
       ),
     );
+  }
+
+
+  Future<String> loadImage() async {
+    var reference = storage
+        .ref()
+        .child("WIN_20190818_18_12_04_Pro.jpg");
+
+    var url = await reference.getDownloadURL();
+    return url;
   }
 
 
