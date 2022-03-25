@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:family/view/MainTab.dart';
+import 'package:family/view/PostForm.dart';
+import 'package:family/view/PostList.dart';
 import 'package:family/widgets/CameraScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -36,22 +38,25 @@ class MyApp extends StatefulWidget {
   State<StatefulWidget> createState() {
     return MyAppState();
   }
-
 }
 
 class MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
+      routes: {
+        '/': (context) => MainTab(),
+        '/createPost': (context) => PostForm(),
+        '/listPost': (context) => PostList(),
+      },
+
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       debugShowCheckedModeBanner: false,
-      home: MainTab(),
+      //home: MainTab(),
       //home: CameraScreen(),
     );
-
   }
 }

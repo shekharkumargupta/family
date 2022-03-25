@@ -7,8 +7,7 @@ import 'package:family/view/PostItemBottomBar.dart';
 import 'package:family/widgets/ImageWidget.dart';
 import 'package:family/widgets/ImageSlider.dart';
 
-class PostListItem extends StatelessWidget{
-
+class PostListItem extends StatelessWidget {
   final Post post;
 
   PostListItem(this.post);
@@ -18,8 +17,7 @@ class PostListItem extends StatelessWidget{
     return buildPostCardRow(post);
   }
 
-  Widget buildPostCardRow(Post post){
-
+  Widget buildPostCardRow(Post post) {
     return Card(
       clipBehavior: Clip.antiAliasWithSaveLayer,
       child: Column(
@@ -28,9 +26,7 @@ class PostListItem extends StatelessWidget{
             leading: CircleAvatar(
               child: Container(
                 alignment: Alignment.center,
-                child: Text(
-                    post.postedBy.characters.first.toUpperCase()
-                ),
+                child: Text(post.postedBy.characters.first.toUpperCase()),
               ),
             ),
             title: Text(post.postedBy),
@@ -40,23 +36,11 @@ class PostListItem extends StatelessWidget{
             ),
             trailing: Icon(Icons.favorite),
           ),
-
           Padding(
             padding: const EdgeInsets.all(10.0),
-            child: Text(
-              post.text,
-              textAlign: TextAlign.left
-            ),
+            child: Text(post.text, textAlign: TextAlign.left),
           ),
-
-
-          post.medias != null
-          ?
-            ImageSlider(post.medias)
-          :
-            ImageSlider([Media("IMAGE", "https://picsum.photos/900/800")])
-          ,
-
+          ImageSlider(post.medias),
           PostItemBottomBar(post),
         ],
       ),

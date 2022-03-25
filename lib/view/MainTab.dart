@@ -1,21 +1,16 @@
-
 import 'package:family/view/MediaList.dart';
 import 'package:family/view/PeopleList.dart';
 import 'package:family/view/PostList.dart';
 import 'package:flutter/material.dart';
 
-
 class MainTab extends StatefulWidget {
-
   @override
   State<StatefulWidget> createState() {
     return MainTabState();
   }
 }
 
-
 class MainTabState extends State<MainTab> {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -24,8 +19,8 @@ class MainTabState extends State<MainTab> {
           length: 3,
           child: new Scaffold(
             body: new NestedScrollView(
-              headerSliverBuilder: (BuildContext context,
-                  bool innerBoxIsScrolled) {
+              headerSliverBuilder:
+                  (BuildContext context, bool innerBoxIsScrolled) {
                 return <Widget>[
                   new SliverAppBar(
                     title: Text("Smile"),
@@ -47,19 +42,14 @@ class MainTabState extends State<MainTab> {
                   Center(
                     child: PostList(),
                   ),
-                  Center(
-                      child: PeopleList()
-                  ),
+                  Center(child: PeopleList()),
                   Center(
                     child: MediaList(),
                   )
                 ],
               ),
             ),
-
           ),
-        )
-    );
+        ));
   }
 }
-
